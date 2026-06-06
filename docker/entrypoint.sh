@@ -4,7 +4,7 @@ set -eu
 cd /var/www/html
 
 mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
 
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     attempts=0
@@ -20,6 +20,14 @@ if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     php docker/seed-if-empty.php
     php artisan storage:link --force
     php artisan optimize
+fi
+
+# Use Railway's PORT if available, otherwise default to 8080
+APP_PORT="${PORT:-8080}"
+
+# Replace port in CMD if artisan serve is used
+if [ "$1" = "php" ] && [ "$2" = "artisan" ] && [ "$3" = "serve" ]; then
+    exec php artisan serve --host=0.0.0.0 --port="$APP_PORT"
 fi
 
 exec "$@"
