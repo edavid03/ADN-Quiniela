@@ -1,0 +1,304 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Sora', 'Archivo', ui-sans-serif, system-ui, sans-serif;
+
+    --color-fwc-midnight: #170f2f;
+    --color-fwc-mountain: #2e1a47;
+    --color-fwc-cream: #fff4df;
+    --color-fwc-sand: #e9d4ae;
+    --color-fwc-magenta: #d82773;
+    --color-fwc-red: #c8172f;
+    --color-fwc-orange: #f26a21;
+    --color-fwc-gold: #f7c74a;
+    --color-fwc-teal: #00a6a6;
+    --color-fwc-green: #0b7a4b;
+}
+
+@layer base {
+    :root {
+        color-scheme: light;
+
+        --fwc-primary: #170f2f;
+        --fwc-primary-2: #2e1a47;
+        --fwc-secondary: #f26a21;
+        --fwc-secondary-2: #d82773;
+        --fwc-red: #c8172f;
+        --fwc-accent: #f7c74a;
+        --fwc-accent-2: #00a6a6;
+        --fwc-aux-green: #0b7a4b;
+        --fwc-aux-cream: #fff4df;
+        --fwc-aux-sand: #e9d4ae;
+        --fwc-aux-ink: #120b24;
+
+        --app-bg: var(--fwc-aux-cream);
+        --app-panel: #fff9ec;
+        --app-panel-strong: #ffffff;
+        --app-panel-soft: #f0dfbf;
+        --app-text: var(--fwc-aux-ink);
+        --app-muted: #66556f;
+        --app-border: #d9c49e;
+        --app-primary: var(--fwc-primary);
+        --app-primary-strong: var(--fwc-primary-2);
+        --app-secondary: var(--fwc-secondary);
+        --app-secondary-strong: #b84615;
+        --app-accent: var(--fwc-accent);
+        --app-accent-2: var(--fwc-accent-2);
+        --app-danger: #b42318;
+        --app-success: var(--fwc-aux-green);
+        --app-ring: color-mix(in srgb, var(--fwc-accent-2) 36%, transparent);
+    }
+
+    .dark {
+        color-scheme: dark;
+        --app-bg: #10091f;
+        --app-panel: #1c1230;
+        --app-panel-strong: #27183d;
+        --app-panel-soft: #322049;
+        --app-text: #fff4df;
+        --app-muted: #d7c5a8;
+        --app-border: #5a4265;
+        --app-primary: #fff4df;
+        --app-primary-strong: #f7c74a;
+        --app-secondary: #ff7d38;
+        --app-secondary-strong: #f26a21;
+        --app-accent: #f7c74a;
+        --app-accent-2: #2ad1c9;
+        --app-danger: #fca5a5;
+        --app-success: #72d49c;
+        --app-ring: color-mix(in srgb, var(--app-accent-2) 38%, transparent);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        min-height: 100%;
+        background: var(--app-bg);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+            linear-gradient(116deg, color-mix(in srgb, var(--app-secondary) 18%, transparent) 0 13%, transparent 13% 100%),
+            linear-gradient(144deg, transparent 0 58%, color-mix(in srgb, var(--app-accent-2) 18%, transparent) 58% 64%, transparent 64%),
+            repeating-linear-gradient(90deg, transparent 0 5.25rem, color-mix(in srgb, var(--app-border) 30%, transparent) 5.25rem 5.32rem),
+            var(--app-bg);
+        color: var(--app-text);
+        font-family: var(--font-sans);
+        letter-spacing: 0;
+    }
+
+    body::before {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        content: '';
+        background:
+            linear-gradient(180deg, transparent 0 18rem, color-mix(in srgb, var(--app-primary) 7%, transparent)),
+            radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--app-accent) 22%, transparent), transparent 17rem);
+        opacity: .9;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    button,
+    input {
+        font: inherit;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+        border: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        color: var(--app-text);
+    }
+
+    input:focus {
+        outline: none;
+        border-color: var(--app-accent-2);
+        box-shadow: 0 0 0 4px var(--app-ring);
+    }
+
+    @keyframes page-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(.45rem);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
+
+@layer components {
+    .app-shell {
+        width: min(1240px, 94vw);
+        margin-inline: auto;
+    }
+
+    .page-fade {
+        animation: page-fade-in 360ms ease-out both;
+        will-change: opacity, transform;
+    }
+
+    .font-display {
+        font-family: var(--font-display);
+    }
+
+    .surface {
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: color-mix(in srgb, var(--app-panel) 94%, transparent);
+        box-shadow: 0 24px 60px rgba(18, 11, 36, .1);
+    }
+
+    .surface-strong {
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        box-shadow: 0 18px 44px rgba(18, 11, 36, .12);
+    }
+
+    .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        color: var(--app-secondary);
+        font-family: var(--font-display);
+        font-size: .75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .kicker::before {
+        width: 1.8rem;
+        height: .35rem;
+        content: '';
+        background: linear-gradient(90deg, var(--app-secondary), var(--app-accent), var(--app-accent-2));
+    }
+
+    .btn {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: .5rem;
+        padding: .7rem 1rem;
+        font-family: var(--font-display);
+        font-size: .9rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        border: 1px solid var(--app-primary-strong);
+        background: var(--app-primary);
+        color: var(--fwc-aux-cream);
+        box-shadow: 0 10px 0 color-mix(in srgb, var(--app-primary-strong) 84%, #000);
+    }
+
+    .dark .btn-primary {
+        color: #170f2f;
+    }
+
+    .btn-secondary {
+        border: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        color: var(--app-primary);
+    }
+
+    .stat-tile {
+        position: relative;
+        overflow: hidden;
+        min-height: 8.5rem;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        padding: 1.2rem;
+    }
+
+    .stat-tile::after {
+        position: absolute;
+        right: -1.4rem;
+        bottom: -1.6rem;
+        content: attr(data-mark);
+        color: color-mix(in srgb, var(--app-primary) 11%, transparent);
+        font-family: var(--font-display);
+        font-size: 7rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .flag-chip {
+        display: inline-flex;
+        width: 2rem;
+        height: 2rem;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-soft);
+    }
+
+    .match-row {
+        display: grid;
+        gap: 1rem;
+        border-top: 1px solid var(--app-border);
+        padding: 1rem 1.25rem;
+    }
+
+    .match-row:first-child {
+        border-top: 0;
+    }
+
+    .score-input {
+        width: 4.8rem;
+        border-radius: .5rem;
+        padding: .75rem .65rem;
+        text-align: center;
+        font-family: var(--font-display);
+        font-weight: 900;
+    }
+
+    .alert {
+        margin-bottom: 1.25rem;
+        border-radius: .5rem;
+        border: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        padding: 1rem;
+        font-weight: 800;
+    }
+}

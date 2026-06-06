@@ -1,0 +1,74 @@
+x-app-environment: &app-environment
+  APP_NAME: Quiniela
+  APP_ENV: production
+  APP_KEY: "${DOCKER_APP_KEY:-base64:K7jz8N8B7QhU2cKfRq2wqLr8qLr8qLr8qLr8qLr8qLo=}"
+  APP_DEBUG: "${DOCKER_APP_DEBUG:-false}"
+  APP_URL: "${DOCKER_APP_URL:-http://localhost:8081}"
+  LOG_CHANNEL: stderr
+  DB_CONNECTION: mariadb
+  DB_HOST: mariadb
+  DB_PORT: 3306
+  DB_DATABASE: "${DOCKER_DB_DATABASE:-quiniela_app}"
+  DB_USERNAME: "${DOCKER_DB_USERNAME:-quiniela}"
+  DB_PASSWORD: "${DOCKER_DB_PASSWORD:-secret}"
+  SESSION_DRIVER: database
+  CACHE_STORE: database
+  QUEUE_CONNECTION: database
+
+services:
+  app:
+    build:
+      context: .
+    image: quiniela-app:local
+    restart: unless-stopped
+    ports:
+      - "${DOCKER_APP_PORT:-8081}:80"
+    environment:
+      <<: *app-environment
+      RUN_MIGRATIONS: "true"
+      AUTO_SEED: "${DOCKER_AUTO_SEED:-true}"
+    volumes:
+      - quiniela-storage:/var/www/html/storage
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1/login') === false ? 1 : 0);"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  queue:
+    image: quiniela-app:local
+    restart: unless-stopped
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=90"]
+    environment:
+      <<: *app-environment
+      RUN_MIGRATIONS: "false"
+    volumes:
+      - quiniela-storage:/var/www/html/storage
+    depends_on:
+      app:
+        condition: service_healthy
+
+  mariadb:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: "${DOCKER_DB_DATABASE:-quiniela_app}"
+      MARIADB_USER: "${DOCKER_DB_USERNAME:-quiniela}"
+      MARIADB_PASSWORD: "${DOCKER_DB_PASSWORD:-secret}"
+      MARIADB_ROOT_PASSWORD: "${DOCKER_DB_ROOT_PASSWORD:-root-secret}"
+    volumes:
+      - quiniela-mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  quiniela-mariadb-data:
+  quiniela-storage:
