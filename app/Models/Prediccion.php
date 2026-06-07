@@ -44,7 +44,7 @@ class Prediccion extends Model
 
         $limite = Partido::fechaLimiteApuestasUtc();
 
-        if ($limite !== null && now()->utc()->greaterThan($limite)) {
+        if ($limite !== null && now()->utc()->greaterThanOrEqualTo($limite)) {
             return 'El plazo para registrar apuestas ha cerrado.';
         }
 

@@ -43,7 +43,7 @@ class Partido extends Model
             return null;
         }
 
-        return Carbon::parse($primeraFecha)->subWeek();
+        return Carbon::parse($primeraFecha)->subMinutes(30);
     }
 
 

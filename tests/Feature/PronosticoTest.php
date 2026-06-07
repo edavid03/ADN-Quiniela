@@ -6,6 +6,7 @@ use App\Models\Equipo;
 use App\Models\Partido;
 use App\Models\Prediccion;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -149,7 +150,7 @@ class PronosticoTest extends TestCase
     public function test_pronosticos_after_deadline_are_rejected_with_security_alert(): void
     {
         $user = User::factory()->create();
-        $partido = $this->crearPartidoConFecha(now()->utc()->addDays(6));
+        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(29));
 
         $this->actingAs($user)
             ->post('/pronosticos', [
@@ -162,6 +163,49 @@ class PronosticoTest extends TestCase
             ])
             ->assertSessionHasErrors('predicciones')
             ->assertSessionHas('security_alert', 'El plazo para registrar apuestas ha cerrado.');
+
+        $this->assertDatabaseCount('predicciones', 0);
+    }
+
+    public function test_pronosticos_before_thirty_minute_deadline_are_allowed(): void
+    {
+        $user = User::factory()->create();
+        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(31));
+
+        $this->actingAs($user)
+            ->post('/pronosticos', [
+                'predicciones' => [
+                    $partido->id => [
+                        'goles_local' => 1,
+                        'goles_visitante' => 0,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/pronosticos');
+
+        $this->assertDatabaseHas('predicciones', [
+            'usuario_id' => $user->id,
+            'partido_id' => $partido->id,
+        ]);
+    }
+
+    public function test_pronosticos_at_thirty_minute_deadline_are_rejected(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $user = User::factory()->create();
+        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+
+        $this->actingAs($user)
+            ->post('/pronosticos', [
+                'predicciones' => [
+                    $partido->id => [
+                        'goles_local' => 1,
+                        'goles_visitante' => 0,
+                    ],
+                ],
+            ])
+            ->assertSessionHasErrors('predicciones');
 
         $this->assertDatabaseCount('predicciones', 0);
     }
