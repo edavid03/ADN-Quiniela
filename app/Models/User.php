@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use LogicException;
@@ -22,9 +23,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'username',
+        'cedula',
         'email',
         'password',
         'is_admin',
+        'approved_at',
     ];
 
     /**
@@ -48,7 +51,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'approved_at' => 'datetime',
         ];
+    }
+
+    public function predicciones(): HasMany
+    {
+        return $this->hasMany(Prediccion::class, 'usuario_id');
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approved_at !== null;
     }
 
     protected static function booted(): void

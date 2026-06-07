@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminPartidoResultadoController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PronosticoController;
 use App\Http\Controllers\RankingController;
@@ -19,6 +20,8 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -51,5 +54,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/dashboard', [AdminPartidoResultadoController::class, 'edit'])->name('admin.dashboard');
         Route::get('/admin/resultados', [AdminPartidoResultadoController::class, 'edit'])->name('admin.resultados.edit');
         Route::post('/admin/resultados', [AdminPartidoResultadoController::class, 'update'])->name('admin.resultados.update');
+        Route::get('/admin/usuarios', [AdminUserController::class, 'index'])->name('admin.usuarios.index');
+        Route::post('/admin/usuarios', [AdminUserController::class, 'store'])->name('admin.usuarios.store');
+        Route::patch('/admin/usuarios/{user}/aceptar', [AdminUserController::class, 'approve'])->name('admin.usuarios.approve');
+        Route::delete('/admin/usuarios/{user}', [AdminUserController::class, 'destroy'])->name('admin.usuarios.destroy');
     });
 });

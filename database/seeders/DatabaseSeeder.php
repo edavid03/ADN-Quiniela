@@ -20,8 +20,10 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Test User',
                 'username' => 'admin',
+                'cedula' => '10000000',
                 'password' => Hash::make('password'),
                 'is_admin' => true,
+                'approved_at' => now(),
             ]
         );
     }
