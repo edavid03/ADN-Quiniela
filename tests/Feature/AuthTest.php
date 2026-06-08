@@ -18,6 +18,75 @@ class AuthTest extends TestCase
             ->assertSee('Usuario');
     }
 
+    public function test_registration_screen_can_be_rendered(): void
+    {
+        $this->get('/register')
+            ->assertOk()
+            ->assertSee('Registra tus datos');
+    }
+
+    public function test_users_can_register_and_remain_pending(): void
+    {
+        $this->post('/register', [
+            'name' => 'Usuario Pendiente',
+            'username' => 'usuario_pendiente',
+            'cedula' => '12345678',
+            'email' => 'pendiente@example.com',
+            'password' => 'clave-segura',
+            'password_confirmation' => 'clave-segura',
+        ])->assertRedirect('/login');
+
+        $this->assertDatabaseHas('users', [
+            'username' => 'usuario_pendiente',
+            'cedula' => '12345678',
+            'approved_at' => null,
+        ]);
+        $this->assertGuest();
+    }
+
+    public function test_registration_rejects_duplicate_cedula(): void
+    {
+        User::factory()->create(['cedula' => '12345678']);
+
+        $this->post('/register', [
+            'name' => 'Usuario Duplicado',
+            'username' => 'usuario_duplicado',
+            'cedula' => '12345678',
+            'email' => 'duplicado@example.com',
+            'password' => 'clave-segura',
+            'password_confirmation' => 'clave-segura',
+        ])->assertSessionHasErrors('cedula');
+    }
+
+    public function test_registration_rejects_invalid_cedula(): void
+    {
+        $this->post('/register', [
+            'name' => 'Usuario Invalido',
+            'username' => 'usuario_invalido',
+            'cedula' => 'V-12345678',
+            'email' => 'invalido@example.com',
+            'password' => 'clave-segura',
+            'password_confirmation' => 'clave-segura',
+        ])->assertSessionHasErrors('cedula');
+    }
+
+    public function test_registration_rejects_duplicate_username_and_email(): void
+    {
+        User::factory()->create([
+            'username' => 'usuario_existente',
+            'email' => 'existente@example.com',
+        ]);
+
+        $this->post('/register', [
+            'name' => 'Usuario Duplicado',
+            'username' => 'usuario_existente',
+            'cedula' => '12345678',
+            'email' => 'existente@example.com',
+            'password' => 'clave-segura',
+            'password_confirmation' => 'clave-segura',
+        ])->assertSessionHasErrors(['username', 'email']);
+    }
+
     public function test_users_can_login_with_username_and_password(): void
     {
         $user = User::factory()->create([
@@ -68,6 +137,22 @@ class AuthTest extends TestCase
             'username' => 'usuario_prueba',
             'password' => 'incorrecta',
         ])->assertSessionHasErrors('username');
+
+        $this->assertGuest();
+    }
+
+    public function test_pending_users_cannot_login(): void
+    {
+        User::factory()->pending()->create([
+            'username' => 'usuario_pendiente',
+            'password' => Hash::make('clave-segura'),
+        ]);
+
+        $this->post('/login', [
+            'username' => 'usuario_pendiente',
+            'password' => 'clave-segura',
+        ])
+            ->assertSessionHasErrors('username');
 
         $this->assertGuest();
     }

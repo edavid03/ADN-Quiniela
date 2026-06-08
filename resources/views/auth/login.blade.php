@@ -46,6 +46,12 @@
                         <p class="mt-3 max-w-md font-semibold leading-6 text-[var(--app-muted)]">Carga tus marcadores, consulta el ranking y vuelve cuando quieras a ajustar tus pronosticos.</p>
                     </div>
 
+                    @if (session('status'))
+                        <div class="alert border-emerald-200 bg-emerald-50 text-[var(--app-success)] dark:border-emerald-900/50 dark:bg-emerald-950/30">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="alert border-red-200 bg-red-50 text-[var(--app-danger)] dark:border-red-900/50 dark:bg-red-950/30">
                             {{ $errors->first() }}
@@ -76,6 +82,11 @@
                         <button type="submit" class="btn btn-primary w-full">
                             Entrar
                         </button>
+
+                        <p class="text-center text-sm font-semibold text-[var(--app-muted)]">
+                            &iquest;Todav&iacute;a no tienes cuenta?
+                            <a href="{{ route('register') }}" class="font-extrabold text-[var(--app-secondary)]">Solicita tu registro</a>
+                        </p>
                     </form>
                 </section>
             </div>
