@@ -37,7 +37,9 @@
 
                     <nav class="hidden flex-wrap items-center gap-2 text-sm md:flex">
                         <a href="{{ route('dashboard') }}" class="btn btn-secondary {{ request()->routeIs('dashboard') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Mesa</a>
-                        <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Pronosticos</a>
+                        @unless (auth()->user()->is_admin)
+                            <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Pronosticos</a>
+                        @endunless
                         <a href="{{ route('resultados.index') }}" class="btn btn-secondary {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Resultados</a>
                         <a href="{{ route('rankings.index') }}" class="btn btn-secondary {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Ranking</a>
                         @if (auth()->user()->is_admin)
@@ -58,9 +60,11 @@
             </header>
 
             <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--app-border)] bg-[var(--app-panel)]/94 px-3 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(18,11,36,.14)] backdrop-blur-xl md:hidden" aria-label="Navegacion principal">
-                <div class="mx-auto grid max-w-md grid-cols-4 gap-2">
+                <div class="mx-auto grid max-w-md {{ auth()->user()->is_admin ? 'grid-cols-3' : 'grid-cols-4' }} gap-2">
                     <a href="{{ route('dashboard') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('dashboard') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Mesa</a>
-                    <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Pronosticos</a>
+                    @unless (auth()->user()->is_admin)
+                        <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Pronosticos</a>
+                    @endunless
                     <a href="{{ route('resultados.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Resultados</a>
                     <a href="{{ route('rankings.index') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Ranking</a>
                 </div>

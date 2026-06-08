@@ -14,6 +14,35 @@ class PronosticoTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_cannot_view_pronosticos(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->get('/pronosticos')
+            ->assertRedirect('/dashboard')
+            ->assertSessionHas('security_alert');
+    }
+
+    public function test_admin_cannot_create_pronosticos(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $partido = $this->crearPartido();
+
+        $this->actingAs($admin)
+            ->post('/pronosticos', [
+                'predicciones' => [
+                    $partido->id => [
+                        'goles_local' => 2,
+                        'goles_visitante' => 1,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/dashboard');
+
+        $this->assertDatabaseMissing('predicciones', ['usuario_id' => $admin->id]);
+    }
+
     public function test_users_can_create_pronosticos(): void
     {
         $user = User::factory()->create();

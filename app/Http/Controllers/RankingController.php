@@ -11,6 +11,7 @@ class RankingController extends Controller
     public function index(): View
     {
         $rankings = User::query()
+            ->where('users.is_admin', false)
             ->leftJoin('predicciones', 'users.id', '=', 'predicciones.usuario_id')
             ->select([
                 'users.id',

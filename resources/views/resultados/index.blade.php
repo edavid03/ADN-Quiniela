@@ -6,25 +6,25 @@
     <section class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <span class="kicker">Marcadores</span>
-            <h1 class="mt-3 font-display text-4xl font-black leading-tight text-[var(--app-text)] md:text-5xl">Resultados de partidos</h1>
+            <h1 class="mt-3 font-display text-3xl font-black leading-tight text-[var(--app-text)] sm:text-4xl md:text-5xl">Resultados de partidos</h1>
             <p class="mt-2 max-w-2xl leading-7 text-[var(--app-muted)]">Consulta todos los partidos cargados y los marcadores oficiales cuando el administrador los registre.</p>
         </div>
-        <div class="flex flex-wrap gap-3">
-            <a href="{{ route('dashboard') }}" class="btn btn-secondary">Volver a mesa</a>
-            <a href="{{ route('rankings.index') }}" class="btn btn-primary">Ver ranking</a>
+        <div class="grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:flex-wrap">
+            <a href="{{ route('dashboard') }}" class="btn btn-secondary px-3 sm:px-4">Volver a mesa</a>
+            <a href="{{ route('rankings.index') }}" class="btn btn-primary px-3 sm:px-4">Ver ranking</a>
         </div>
     </section>
 
     <section class="surface overflow-hidden">
-        <div class="grid grid-cols-[1fr_auto] items-center gap-3 border-b border-[var(--app-border)] px-5 py-4">
+        <div class="grid grid-cols-1 items-center gap-3 border-b border-[var(--app-border)] px-4 py-4 sm:grid-cols-[1fr_auto] sm:px-5">
             <div>
                 <span class="kicker">Calendario completo</span>
                 <h2 class="font-display text-xl font-black">Partidos y resultados</h2>
             </div>
-            <span class="rounded-lg bg-[var(--app-panel-soft)] px-3 py-2 text-sm font-extrabold text-[var(--app-muted)]">{{ $partidos->count() }} partidos</span>
+            <span class="w-fit rounded-lg bg-[var(--app-panel-soft)] px-3 py-2 text-sm font-extrabold text-[var(--app-muted)]">{{ $partidos->count() }} partidos</span>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 p-4">
+        <div class="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-3 lg:gap-2">
             @forelse ($partidos as $partido)
                 @php
                     $tieneResultado = $partido->goles_local !== null && $partido->goles_visitante !== null;
@@ -33,7 +33,7 @@
                     $prediccionEvaluada = $tienePrediccion && $prediccion->puntos !== null;
                 @endphp
 
-                <article class="grid min-h-40 gap-2 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] p-2 text-xs">
+                <article class="grid gap-3 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] p-3 text-xs sm:min-h-40 sm:gap-2 sm:p-2">
                     <div>
                         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-1 text-center text-[11px] font-extrabold leading-tight">
                             <div class="min-w-0">
@@ -98,7 +98,7 @@
                     </div>
                 </article>
             @empty
-                <div class="px-1 py-2 font-semibold text-[var(--app-muted)]">Todavia no hay partidos cargados.</div>
+                <div class="col-span-full px-1 py-2 font-semibold text-[var(--app-muted)]">Todavia no hay partidos cargados.</div>
             @endforelse
         </div>
     </section>

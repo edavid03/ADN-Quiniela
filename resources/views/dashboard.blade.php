@@ -16,7 +16,9 @@
             <p class="mt-3 max-w-2xl text-lg font-semibold leading-7 text-[var(--app-muted)]">Pronosticos, partidos y ranking del grupo con una identidad inspirada en Monterrey 2026.</p>
         </div>
         <div class="flex flex-wrap gap-3 lg:justify-end">
-            <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
+            @unless (auth()->user()->is_admin)
+                <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
+            @endunless
             <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>
@@ -25,7 +27,7 @@
         </div>
     </section>
 
-    <section class="mb-6 grid gap-4 md:grid-cols-3">
+    <section class="mb-6 grid gap-4 {{ auth()->user()->is_admin ? 'md:grid-cols-2' : 'md:grid-cols-3' }}">
         <article class="stat-tile" data-mark="48">
             <span class="text-sm font-black uppercase text-[var(--app-muted)]">Equipos</span>
             <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $teamCount }}</strong>
@@ -34,10 +36,12 @@
             <span class="text-sm font-black uppercase text-[var(--app-muted)]">Partidos</span>
             <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $matchCount }}</strong>
         </article>
-        <article class="stat-tile" data-mark="3">
-            <span class="text-sm font-black uppercase text-[var(--app-muted)]">Mis pronosticos</span>
-            <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $predictionCount }}</strong>
-        </article>
+        @unless (auth()->user()->is_admin)
+            <article class="stat-tile" data-mark="3">
+                <span class="text-sm font-black uppercase text-[var(--app-muted)]">Mis pronosticos</span>
+                <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $predictionCount }}</strong>
+            </article>
+        @endunless
     </section>
 
 
@@ -71,41 +75,43 @@
         </section>
 
         <aside class="grid gap-5">
-            {{-- INICIO CONTADOR REGRESIVO PRONOSTICOS: puedes editar o eliminar esta card completa. --}}
-            <article class="stat-tile" data-mark="7">
-                <span class="text-sm font-black uppercase text-[var(--app-muted)]">Cierre de pronosticos</span>
+            @unless (auth()->user()->is_admin)
+                {{-- INICIO CONTADOR REGRESIVO PRONOSTICOS: puedes editar o eliminar esta card completa. --}}
+                <article class="stat-tile" data-mark="7">
+                    <span class="text-sm font-black uppercase text-[var(--app-muted)]">Cierre de pronosticos</span>
 
-                @if ($predictionDeadline)
-                    <div
-                        class="relative z-10 mt-3"
-                        data-prediction-countdown
-                        data-deadline="{{ $predictionDeadline->copy()->utc()->toIso8601String() }}"
-                    >
-                        <div style="display: flex; width: 100%; overflow: hidden; border: 1px solid var(--app-border); border-radius: .5rem; background: var(--app-panel-soft);">
-                            <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
-                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-days>--</strong>
-                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Dias</span>
+                    @if ($predictionDeadline)
+                        <div
+                            class="relative z-10 mt-3"
+                            data-prediction-countdown
+                            data-deadline="{{ $predictionDeadline->copy()->utc()->toIso8601String() }}"
+                        >
+                            <div style="display: flex; width: 100%; overflow: hidden; border: 1px solid var(--app-border); border-radius: .5rem; background: var(--app-panel-soft);">
+                                <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
+                                    <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-days>--</strong>
+                                    <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Dias</span>
+                                </div>
+                                <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
+                                    <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-hours>--</strong>
+                                    <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Horas</span>
+                                </div>
+                                <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
+                                    <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-minutes>--</strong>
+                                    <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Minutos</span>
+                                </div>
+                                <div style="flex: 1 1 0; min-width: 0; padding: .5rem .35rem; text-align: center;">
+                                    <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-seconds>--</strong>
+                                    <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Segundos</span>
+                                </div>
                             </div>
-                            <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
-                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-hours>--</strong>
-                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Horas</span>
-                            </div>
-                            <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
-                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-minutes>--</strong>
-                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Minutos</span>
-                            </div>
-                            <div style="flex: 1 1 0; min-width: 0; padding: .5rem .35rem; text-align: center;">
-                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-seconds>--</strong>
-                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Segundos</span>
-                            </div>
+                            <p class="mt-2 text-xs font-extrabold text-[var(--app-secondary)]" data-countdown-status>Pronosticos abiertos</p>
                         </div>
-                        <p class="mt-2 text-xs font-extrabold text-[var(--app-secondary)]" data-countdown-status>Pronosticos abiertos</p>
-                    </div>
-                @else
-                    <p class="relative z-10 mt-3 text-sm font-semibold leading-6 text-[var(--app-muted)]">Todavia no hay partidos cargados para calcular el cierre.</p>
-                @endif
-            </article>
-            {{-- FIN CONTADOR REGRESIVO PRONOSTICOS --}}
+                    @else
+                        <p class="relative z-10 mt-3 text-sm font-semibold leading-6 text-[var(--app-muted)]">Todavia no hay partidos cargados para calcular el cierre.</p>
+                    @endif
+                </article>
+                {{-- FIN CONTADOR REGRESIVO PRONOSTICOS --}}
+            @endunless
 
             <section class="surface overflow-hidden">
                 <div class="border-b border-[var(--app-border)] px-5 py-3">
@@ -128,7 +134,7 @@
     </div>
 
     {{-- INICIO SCRIPT CONTADOR REGRESIVO PRONOSTICOS: puedes editar o eliminar este script completo. --}}
-    @if ($predictionDeadline)
+    @if (! auth()->user()->is_admin && $predictionDeadline)
         <script>
             (() => {
                 const countdown = document.querySelector('[data-prediction-countdown]');

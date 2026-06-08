@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Rules\ValidEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
@@ -82,7 +83,7 @@ class AdminUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username'],
             'cedula' => ['required', 'string', 'regex:/^\d{6,12}$/', 'unique:users,cedula'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', new ValidEmail, 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
     }
