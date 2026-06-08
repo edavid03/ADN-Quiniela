@@ -41,7 +41,8 @@
                         <a href="{{ route('resultados.index') }}" class="btn btn-secondary {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Resultados</a>
                         <a href="{{ route('rankings.index') }}" class="btn btn-secondary {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Ranking</a>
                         @if (auth()->user()->is_admin)
-                            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.dashboard', 'admin.resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
+                            <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.usuarios.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Usuarios</a>
                         @endif
                     </nav>
 

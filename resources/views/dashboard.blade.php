@@ -20,6 +20,7 @@
             <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>
+                <a class="btn btn-secondary" href="{{ route('admin.usuarios.index') }}">Gestionar usuarios</a>
             @endif
         </div>
     </section>
