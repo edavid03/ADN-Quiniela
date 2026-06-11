@@ -27,6 +27,10 @@ class Partido extends Model
         return $this->hasMany(Prediccion::class);
     }
 
+    public function fechaCaracas(): Carbon
+    {
+        return Carbon::parse($this->fecha_utc, 'UTC')->setTimezone('America/Caracas');
+    }
 
 
 

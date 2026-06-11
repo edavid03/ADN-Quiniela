@@ -98,4 +98,36 @@ class ResultadoTest extends TestCase
             ->assertSee('No acertaste')
             ->assertSee('0 pts');
     }
+
+    public function test_match_times_are_displayed_in_caracas_timezone(): void
+    {
+        $user = User::factory()->create();
+        $local = Equipo::create([
+            'id' => 1,
+            'name' => 'Local FC',
+            'code' => 'LOC',
+            'grupo' => 'A',
+        ]);
+        $visitante = Equipo::create([
+            'id' => 2,
+            'name' => 'Visitante FC',
+            'code' => 'VIS',
+            'grupo' => 'A',
+        ]);
+
+        Partido::create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => '2026-06-12 00:30:00',
+            'estadio' => 'Estadio Caracas',
+            'fase' => 'Grupos',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/resultados')
+            ->assertOk()
+            ->assertSee('11/06/2026 20:30')
+            ->assertSee('hora de Caracas')
+            ->assertDontSee('12/06/2026 00:30 UTC');
+    }
 }
