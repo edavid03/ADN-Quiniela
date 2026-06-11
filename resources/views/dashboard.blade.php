@@ -57,7 +57,7 @@
                         <span class="flag-chip">{!! $match->visitante?->flagEmojiHtml() !!}</span>
                     </div>
                     <div class="text-sm font-semibold leading-6 text-[var(--app-muted)] lg:text-right">
-                        {{ \Carbon\Carbon::parse($match->fecha_utc)->format('d/m/Y H:i') }} UTC<br>
+                        {{ $match->fechaCaracas()->format('d/m/Y H:i') }}<br>
                         {{ $match->estadio }}
                     </div>
                 </article>

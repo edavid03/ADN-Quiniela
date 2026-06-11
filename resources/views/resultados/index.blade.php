@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <div class="mt-2 text-center text-[10px] font-semibold leading-4 text-[var(--app-muted)]">
-                            {{ \Carbon\Carbon::parse($partido->fecha_utc)->format('d/m/Y H:i') }} UTC
+                            {{ $partido->fechaCaracas()->format('d/m/Y H:i') }} 
                             @if ($partido->estadio)
                                 <br>{{ $partido->estadio }}
                             @endif
