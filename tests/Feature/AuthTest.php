@@ -125,7 +125,12 @@ class AuthTest extends TestCase
         $this->actingAs($user)
             ->get('/dashboard')
             ->assertOk()
-            ->assertSee('Mesa de la quiniela');
+            ->assertSee('Mesa de la quiniela')
+            ->assertSee('Las apuestas estan cerradas.')
+            ->assertDontSee('Crear o editar pronosticos')
+            ->assertDontSee('Mis pronosticos')
+            ->assertDontSee('Cierre de pronosticos')
+            ->assertDontSee('href="/pronosticos"', false);
     }
 
     public function test_admin_users_see_admin_dashboard_link(): void
@@ -141,7 +146,7 @@ class AuthTest extends TestCase
             ->assertDontSee('Crear o editar pronosticos')
             ->assertDontSee('Mis pronosticos')
             ->assertDontSee('Cierre de pronosticos')
-            ->assertDontSee('href="'.route('pronosticos.edit').'"', false);
+            ->assertDontSee('href="/pronosticos"', false);
     }
 
     public function test_users_cannot_login_with_invalid_password(): void
