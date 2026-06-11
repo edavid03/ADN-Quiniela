@@ -9,9 +9,6 @@
         </div>
     @endif
 
-    <div class="alert mb-6 border-red-200 bg-red-50 text-[var(--app-danger)] dark:border-red-900/50 dark:bg-red-950/30">
-        Las apuestas estan cerradas. Ya no es posible cargar ni actualizar pronosticos.
-    </div>
 
     <section class="mb-6 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
