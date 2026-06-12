@@ -14,7 +14,7 @@
             <div class="flex flex-wrap gap-3">
                 <a href="{{ route('dashboard') }}" class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-4 py-2.5 font-bold text-[var(--app-primary)] no-underline hover:border-[var(--app-primary)]">Volver</a>
                 @if ($partidos->isNotEmpty())
-                    <button class="rounded-lg bg-[var(--app-primary)] px-4 py-2.5 font-extrabold text-white hover:bg-[var(--app-primary-strong)] dark:text-[var(--app-bg)]" type="submit">Guardar cambios</button>
+                    <button data-pronosticos-submit class="rounded-lg bg-[var(--app-primary)] px-4 py-2.5 font-extrabold text-white hover:bg-[var(--app-primary-strong)] dark:text-[var(--app-bg)]" type="submit">Guardar cambios</button>
                 @endif
             </div>
         </section>
@@ -30,9 +30,13 @@
         @endif
 
         <section class="overflow-hidden rounded-xl border border-[var(--app-border)] bg-[var(--app-panel)]">
-            @forelse ($partidos as $partido)
+            @foreach ($partidos as $partido)
                 @php $prediccion = $predicciones->get($partido->id); @endphp
-                <article class="grid gap-4 border-b border-[var(--app-border)] px-5 py-4 last:border-b-0 lg:grid-cols-[1fr_auto] lg:items-center">
+                <article
+                    class="grid gap-4 border-b border-[var(--app-border)] px-5 py-4 last:border-b-0 lg:grid-cols-[1fr_auto] lg:items-center"
+                    data-pronostico-partido
+                    data-deadline="{{ $partido->fechaLimitePronosticoUtc()->toIso8601String() }}"
+                >
                     <div>
                         <div class="flex min-w-0 flex-wrap items-center gap-2 font-bold">
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--app-panel-soft)]">{!! $partido->local?->flagEmojiHtml() !!}</span>
@@ -55,9 +59,37 @@
                         <input name="predicciones[{{ $partido->id }}][goles_visitante]" type="number" min="0" max="99" value="{{ old("predicciones.{$partido->id}.goles_visitante", $prediccion->goles_visitante ?? '') }}" class="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-3 py-2.5 text-center text-[var(--app-text)] outline-none focus:border-[var(--app-primary)] focus:ring-4 focus:ring-[var(--app-ring)]">
                     </div>
                 </article>
-            @empty
-                <div class="px-5 py-6 text-[var(--app-muted)]">Todav&iacute;a no hay partidos cargados.</div>
-            @endforelse
+            @endforeach
+            <div data-pronosticos-empty class="{{ $partidos->isNotEmpty() ? 'hidden' : '' }} px-5 py-6 text-[var(--app-muted)]">
+                No hay partidos disponibles para pronosticar.
+            </div>
         </section>
     </form>
+
+    @if ($partidos->isNotEmpty())
+        <script>
+            (() => {
+                const rows = [...document.querySelectorAll('[data-pronostico-partido]')];
+                const submit = document.querySelector('[data-pronosticos-submit]');
+                const empty = document.querySelector('[data-pronosticos-empty]');
+
+                const removeClosedMatches = () => {
+                    rows.forEach((row) => {
+                        const deadline = new Date(row.dataset.deadline).getTime();
+
+                        if (! Number.isNaN(deadline) && Date.now() >= deadline) {
+                            row.remove();
+                        }
+                    });
+
+                    const hasOpenMatches = document.querySelector('[data-pronostico-partido]') !== null;
+                    submit?.classList.toggle('hidden', ! hasOpenMatches);
+                    empty?.classList.toggle('hidden', hasOpenMatches);
+                };
+
+                removeClosedMatches();
+                window.setInterval(removeClosedMatches, 1000);
+            })();
+        </script>
+    @endif
 @endsection

@@ -67,6 +67,42 @@
         </section>
 
         <aside class="grid gap-5">
+            {{-- INICIO CONTADOR REGRESIVO PRONOSTICOS: puedes editar o eliminar esta card completa. --}}
+            <article class="stat-tile" data-mark="7">
+                <span class="text-sm font-black uppercase text-[var(--app-muted)]">Cierre de pronosticos</span>
+
+                @if ($predictionDeadline)
+                    <div
+                        class="relative z-10 mt-3"
+                        data-prediction-countdown
+                        data-deadline="{{ $predictionDeadline->copy()->utc()->toIso8601String() }}"
+                    >
+                        <div style="display: flex; width: 100%; overflow: hidden; border: 1px solid var(--app-border); border-radius: .5rem; background: var(--app-panel-soft);">
+                            <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
+                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-days>--</strong>
+                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Dias</span>
+                            </div>
+                            <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
+                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-hours>--</strong>
+                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Horas</span>
+                            </div>
+                            <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
+                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-minutes>--</strong>
+                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Minutos</span>
+                            </div>
+                            <div style="flex: 1 1 0; min-width: 0; padding: .5rem .35rem; text-align: center;">
+                                <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-seconds>--</strong>
+                                <span style="display: block; margin-top: .2rem; overflow: hidden; text-overflow: ellipsis; font-size: .62rem; font-weight: 900; text-transform: uppercase; color: var(--app-muted);">Segundos</span>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-xs font-extrabold text-[var(--app-secondary)]" data-countdown-status>Pronosticos abiertos</p>
+                    </div>
+                @else
+                    <p class="relative z-10 mt-3 text-sm font-semibold leading-6 text-[var(--app-muted)]">No hay proximos cierres de pronosticos.</p>
+                @endif
+            </article>
+            {{-- FIN CONTADOR REGRESIVO PRONOSTICOS --}}
+
             <section class="surface overflow-hidden">
                 <div class="border-b border-[var(--app-border)] px-5 py-3">
                     <span class="kicker">Reglas</span>

@@ -6,8 +6,9 @@ use App\Models\Partido;
 use App\Models\Prediccion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use RuntimeException;
 
 class PronosticoController extends Controller
 {
@@ -17,11 +18,13 @@ class PronosticoController extends Controller
 
         $partidos = Partido::query()
             ->with(['local', 'visitante'])
+            ->abiertosParaPronosticos()
             ->orderBy('fecha_utc')
             ->get();
 
         $predicciones = Prediccion::query()
             ->where('usuario_id', $user->id)
+            ->whereIn('partido_id', $partidos->pluck('id'))
             ->get()
             ->keyBy('partido_id');
 
@@ -67,32 +70,45 @@ class PronosticoController extends Controller
         }
 
         $partidoIds = array_map('intval', array_keys($pronosticosCompletos));
-        $partidosExistentes = Partido::query()
+        $partidos = Partido::query()
             ->whereIn('id', $partidoIds)
-            ->pluck('id')
-            ->all();
+            ->get()
+            ->keyBy('id');
 
-        if (count($partidosExistentes) !== count($partidoIds)) {
+        if ($partidos->count() !== count($partidoIds)) {
             return back()
                 ->withErrors(['predicciones' => 'Uno de los partidos seleccionados no existe.'])
                 ->with('security_alert', 'Se detecto un partido invalido en el formulario.')
                 ->withInput();
         }
 
-        foreach ($pronosticosCompletos as $partidoId => $pronostico) {
-            $resultado = Prediccion::registrarApuesta(
-                $request->user()->id,
-                (int) $partidoId,
-                (int) $pronostico['goles_local'],
-                (int) $pronostico['goles_visitante'],
-            );
+        if ($partidos->contains(fn (Partido $partido) => ! $partido->aceptaPronosticos())) {
+            return back()
+                ->withErrors(['predicciones' => 'El plazo para registrar apuestas ha cerrado.'])
+                ->with('security_alert', 'El plazo para registrar apuestas ha cerrado.')
+                ->withInput();
+        }
 
-            if (is_string($resultado)) {
-                return back()
-                    ->withErrors(['predicciones' => $resultado])
-                    ->with('security_alert', $resultado)
-                    ->withInput();
-            }
+        try {
+            DB::transaction(function () use ($pronosticosCompletos, $request): void {
+                foreach ($pronosticosCompletos as $partidoId => $pronostico) {
+                    $resultado = Prediccion::registrarApuesta(
+                        $request->user()->id,
+                        (int) $partidoId,
+                        (int) $pronostico['goles_local'],
+                        (int) $pronostico['goles_visitante'],
+                    );
+
+                    if (is_string($resultado)) {
+                        throw new RuntimeException($resultado);
+                    }
+                }
+            });
+        } catch (RuntimeException $exception) {
+            return back()
+                ->withErrors(['predicciones' => $exception->getMessage()])
+                ->with('security_alert', $exception->getMessage())
+                ->withInput();
         }
 
         return redirect()
