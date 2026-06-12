@@ -42,7 +42,7 @@
                         @endunless
                         <a href="{{ route('resultados.index') }}" class="btn btn-secondary {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Resultados</a>
                         <a href="{{ route('rankings.index') }}" class="btn btn-secondary {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Ranking</a>
-                        <a href="{{ route('reglas.index') }}" class="btn btn-secondary {{ request()->routeIs('reglas.*', 'admin.reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Reglas</a>
+                        <a href="{{ route('reglas.index') }}" class="btn btn-secondary {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Reglas</a>
                         @if (auth()->user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.dashboard', 'admin.resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
                             <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.usuarios.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Usuarios</a>
@@ -68,7 +68,7 @@
                     @endunless
                     <a href="{{ route('resultados.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Resultados</a>
                     <a href="{{ route('rankings.index') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Ranking</a>
-                    <a href="{{ route('reglas.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('reglas.*', 'admin.reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Reglas</a>
+                    <a href="{{ route('reglas.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Reglas</a>
                 </div>
             </nav>
         @endauth

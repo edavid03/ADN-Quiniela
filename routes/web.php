@@ -5,7 +5,6 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PronosticoController;
 use App\Http\Controllers\RankingController;
-use App\Http\Controllers\ReglaController;
 use App\Http\Controllers\ResultadoController;
 use App\Models\Equipo;
 use App\Models\Partido;
@@ -55,7 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index');
     Route::get('/resultados', [ResultadoController::class, 'index'])->name('resultados.index');
-    Route::get('/reglas', [ReglaController::class, 'index'])->name('reglas.index');
+    Route::view('/reglas', 'reglas.index')->name('reglas.index');
 
     Route::middleware('not_admin')->group(function () {
         Route::get('/pronosticos', [PronosticoController::class, 'edit'])->name('pronosticos.edit');
@@ -70,8 +69,5 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/usuarios', [AdminUserController::class, 'store'])->name('admin.usuarios.store');
         Route::patch('/admin/usuarios/{user}/aceptar', [AdminUserController::class, 'approve'])->name('admin.usuarios.approve');
         Route::delete('/admin/usuarios/{user}', [AdminUserController::class, 'destroy'])->name('admin.usuarios.destroy');
-        Route::post('/admin/reglas', [ReglaController::class, 'store'])->name('admin.reglas.store');
-        Route::patch('/admin/reglas/{regla}', [ReglaController::class, 'update'])->name('admin.reglas.update');
-        Route::delete('/admin/reglas/{regla}', [ReglaController::class, 'destroy'])->name('admin.reglas.destroy');
     });
 });

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Regla;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -11,7 +10,7 @@ class ReglaTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_view_rules(): void
+    public function test_authenticated_user_can_view_static_rules(): void
     {
         $user = User::factory()->create();
 
@@ -19,69 +18,18 @@ class ReglaTest extends TestCase
             ->get('/reglas')
             ->assertOk()
             ->assertSee('Reglas de la quiniela')
-            ->assertSee('Marcador exacto');
+            ->assertSee('Marcador exacto: 3 puntos')
+            ->assertSee('Resultado correcto: 1 punto')
+            ->assertSee('Sin acierto: 0 puntos');
     }
 
-    public function test_admin_can_create_rule(): void
+    public function test_rules_page_does_not_require_a_rules_database_table(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
 
         $this->actingAs($admin)
-            ->post('/admin/reglas', [
-                'titulo' => 'Premio especial',
-                'contenido' => 'Se entregara al finalizar el torneo.',
-            ])
-            ->assertRedirect('/reglas')
-            ->assertSessionHas('status');
-
-        $this->assertDatabaseHas('reglas', [
-            'titulo' => 'Premio especial',
-            'updated_by' => $admin->id,
-        ]);
-    }
-
-    public function test_admin_can_update_rule(): void
-    {
-        $admin = User::factory()->create(['is_admin' => true]);
-        $regla = Regla::query()->firstOrFail();
-
-        $this->actingAs($admin)
-            ->patch("/admin/reglas/{$regla->id}", [
-                'titulo' => 'Marcador exacto actualizado',
-                'contenido' => 'Ahora contiene una explicacion mas clara.',
-            ])
-            ->assertRedirect('/reglas');
-
-        $this->assertDatabaseHas('reglas', [
-            'id' => $regla->id,
-            'titulo' => 'Marcador exacto actualizado',
-            'updated_by' => $admin->id,
-        ]);
-    }
-
-    public function test_non_admin_cannot_manage_rules(): void
-    {
-        $user = User::factory()->create();
-
-        $this->actingAs($user)
-            ->post('/admin/reglas', [
-                'titulo' => 'Regla no autorizada',
-                'contenido' => 'No debe guardarse.',
-            ])
-            ->assertRedirect('/dashboard');
-
-        $this->assertDatabaseMissing('reglas', ['titulo' => 'Regla no autorizada']);
-    }
-
-    public function test_admin_can_delete_rule(): void
-    {
-        $admin = User::factory()->create(['is_admin' => true]);
-        $regla = Regla::query()->firstOrFail();
-
-        $this->actingAs($admin)
-            ->delete("/admin/reglas/{$regla->id}")
-            ->assertRedirect('/reglas');
-
-        $this->assertDatabaseMissing('reglas', ['id' => $regla->id]);
+            ->get('/reglas')
+            ->assertOk()
+            ->assertDontSee('migrate --force');
     }
 }
