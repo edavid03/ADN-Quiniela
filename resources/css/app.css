@@ -879,6 +879,243 @@
         font-weight: 900;
     }
 
+    .rules-simple-section {
+        border: 1px solid var(--app-border);
+        border-radius: .65rem;
+        background: var(--app-panel-strong);
+        padding: 1.25rem;
+        box-shadow: 0 12px 32px rgba(18, 11, 36, .07);
+    }
+
+    .rules-simple-heading {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: .85rem;
+        align-items: start;
+        margin-bottom: 1.25rem;
+    }
+
+    .rules-simple-heading h2 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 900;
+        line-height: 1.25;
+    }
+
+    .rules-simple-heading p {
+        margin-top: .3rem;
+        color: var(--app-muted);
+        font-size: .85rem;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .rules-simple-step {
+        display: grid;
+        width: 2.25rem;
+        height: 2.25rem;
+        place-items: center;
+        border-radius: .5rem;
+        background: var(--app-primary);
+        color: var(--app-panel-strong);
+        font-family: var(--font-display);
+        font-size: .85rem;
+        font-weight: 900;
+    }
+
+    .dark .rules-simple-step {
+        color: var(--app-bg);
+    }
+
+    .rules-points-grid {
+        display: grid;
+        gap: .75rem;
+    }
+
+    .rules-point-card {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: .85rem;
+        align-items: center;
+        border: 1px solid var(--app-border);
+        border-radius: .55rem;
+        background: var(--app-panel);
+        padding: 1rem;
+    }
+
+    .rules-point-card > strong {
+        display: grid;
+        width: 3rem;
+        height: 3rem;
+        place-items: center;
+        border-radius: .5rem;
+        background: var(--app-primary);
+        color: var(--app-panel-strong);
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        font-weight: 900;
+    }
+
+    .dark .rules-point-card > strong {
+        color: var(--app-bg);
+    }
+
+    .rules-point-card h3 {
+        font-family: var(--font-display);
+        font-size: .9rem;
+        font-weight: 900;
+        line-height: 1.35;
+    }
+
+    .rules-point-card p {
+        margin-top: .25rem;
+        color: var(--app-muted);
+        font-size: .75rem;
+        font-weight: 600;
+        line-height: 1.55;
+    }
+
+    .rules-simple-layout {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .rules-list {
+        display: grid;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: rules-list;
+    }
+
+    .rules-list li {
+        position: relative;
+        display: grid;
+        gap: .25rem;
+        border-top: 1px solid var(--app-border);
+        padding: 1rem 0 1rem 2.5rem;
+        counter-increment: rules-list;
+    }
+
+    .rules-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .rules-list li:last-child {
+        padding-bottom: 0;
+    }
+
+    .rules-list li::before {
+        position: absolute;
+        top: 1rem;
+        left: 0;
+        display: grid;
+        width: 1.75rem;
+        height: 1.75rem;
+        place-items: center;
+        border: 1px solid var(--app-border);
+        border-radius: 50%;
+        background: var(--app-panel-soft);
+        color: var(--app-text);
+        content: counter(rules-list);
+        font-family: var(--font-display);
+        font-size: .7rem;
+        font-weight: 900;
+    }
+
+    .rules-list li:first-child::before {
+        top: 0;
+    }
+
+    .rules-list strong {
+        font-size: .9rem;
+    }
+
+    .rules-list span {
+        color: var(--app-muted);
+        font-size: .8rem;
+        font-weight: 600;
+        line-height: 1.65;
+    }
+
+    .rules-example-table {
+        overflow: hidden;
+        border: 1px solid var(--app-border);
+        border-radius: .55rem;
+    }
+
+    .rules-example-table > div {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 1rem;
+        border-top: 1px solid var(--app-border);
+        padding: .8rem .9rem;
+    }
+
+    .rules-example-table > div:first-child {
+        border-top: 0;
+    }
+
+    .rules-example-header {
+        background: var(--app-panel-soft);
+        color: var(--app-muted);
+        font-size: .65rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .rules-example-table strong {
+        font-family: var(--font-display);
+        font-size: .9rem;
+    }
+
+    .rules-result {
+        border: 1px solid var(--app-border);
+        border-radius: 999px;
+        background: var(--app-panel);
+        padding: .3rem .55rem;
+        color: var(--app-muted);
+        font-size: .68rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .rules-result-exact {
+        border-color: color-mix(in srgb, var(--app-success) 55%, var(--app-border));
+        color: var(--app-success);
+    }
+
+    .rules-result-partial {
+        border-color: color-mix(in srgb, var(--app-secondary) 55%, var(--app-border));
+        color: var(--app-secondary);
+    }
+
+    .rules-note {
+        margin-top: 1rem;
+        border-left: .25rem solid var(--app-secondary);
+        border-radius: .35rem;
+        background: var(--app-panel);
+        padding: .9rem 1rem;
+    }
+
+    .rules-note strong {
+        font-family: var(--font-display);
+        font-size: .8rem;
+        font-weight: 900;
+    }
+
+    .rules-note p {
+        margin-top: .3rem;
+        color: var(--app-muted);
+        font-size: .75rem;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
     @media (min-width: 640px) {
         .app-shell {
             width: min(1240px, calc(100% - 3rem));
@@ -907,6 +1144,15 @@
 
         .rules-guide-grid {
             grid-template-columns: repeat(2, 1fr);
+        }
+
+        .rules-points-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .rules-point-card {
+            grid-template-columns: 1fr;
+            align-content: start;
         }
     }
 
@@ -940,6 +1186,11 @@
             position: sticky;
             top: 7.5rem;
             margin-top: 3.5rem;
+        }
+
+        .rules-simple-layout {
+            grid-template-columns: minmax(0, 1.25fr) minmax(19rem, .75fr);
+            align-items: start;
         }
     }
 
