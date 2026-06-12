@@ -102,7 +102,7 @@
                         <p class="mt-2 text-xs font-extrabold text-[var(--app-secondary)]" data-countdown-status>Pronosticos abiertos</p>
                     </div>
                 @else
-                    <p class="relative z-10 mt-3 text-sm font-semibold leading-6 text-[var(--app-muted)]">Todavia no hay partidos cargados para calcular el cierre.</p>
+                    <p class="relative z-10 mt-3 text-sm font-semibold leading-6 text-[var(--app-muted)]">No hay proximos cierres de pronosticos.</p>
                 @endif
             </article>
             {{-- FIN CONTADOR REGRESIVO PRONOSTICOS --}}

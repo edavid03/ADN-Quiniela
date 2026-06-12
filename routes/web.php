@@ -27,7 +27,11 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
-        $predictionDeadline = Partido::fechaLimiteApuestasUtc();
+        $nextOpenMatch = Partido::query()
+            ->abiertosParaPronosticos()
+            ->orderBy('fecha_utc')
+            ->first();
+        $predictionDeadline = $nextOpenMatch?->fechaLimitePronosticoUtc();
 
         return view('dashboard', [
             'teamCount' => Equipo::query()->count(),

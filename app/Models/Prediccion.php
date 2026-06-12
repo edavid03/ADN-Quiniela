@@ -42,9 +42,7 @@ class Prediccion extends Model
             return 'Partido no encontrado.';
         }
 
-        $limite = Partido::fechaLimiteApuestasUtc();
-
-        if ($limite !== null && now()->utc()->greaterThanOrEqualTo($limite)) {
+        if (! $partido->aceptaPronosticos()) {
             return 'El plazo para registrar apuestas ha cerrado.';
         }
 

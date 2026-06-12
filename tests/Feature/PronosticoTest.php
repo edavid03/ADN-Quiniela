@@ -150,7 +150,7 @@ class PronosticoTest extends TestCase
     public function test_pronosticos_after_deadline_are_rejected_with_security_alert(): void
     {
         $user = User::factory()->create();
-        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(29));
+        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(59));
 
         $this->actingAs($user)
             ->post('/pronosticos', [
@@ -167,10 +167,10 @@ class PronosticoTest extends TestCase
         $this->assertDatabaseCount('predicciones', 0);
     }
 
-    public function test_pronosticos_before_thirty_minute_deadline_are_allowed(): void
+    public function test_pronosticos_before_sixty_minute_deadline_are_allowed(): void
     {
         $user = User::factory()->create();
-        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(31));
+        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(61));
 
         $this->actingAs($user)
             ->post('/pronosticos', [
@@ -189,12 +189,12 @@ class PronosticoTest extends TestCase
         ]);
     }
 
-    public function test_pronosticos_at_thirty_minute_deadline_are_rejected(): void
+    public function test_pronosticos_at_sixty_minute_deadline_are_rejected(): void
     {
         Carbon::setTestNow('2026-06-07 12:00:00');
 
         $user = User::factory()->create();
-        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+        $partido = $this->crearPartidoConFecha(now()->utc()->addMinutes(60));
 
         $this->actingAs($user)
             ->post('/pronosticos', [
@@ -229,6 +229,73 @@ class PronosticoTest extends TestCase
             ->assertOk()
             ->assertSee('Mis pron&oacute;sticos', false)
             ->assertSee('value="1"', false);
+    }
+
+    public function test_pronosticos_form_only_shows_matches_that_are_still_open(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $user = User::factory()->create();
+        $cerrado = $this->crearPartidoConFecha(now()->utc()->addMinutes(60));
+        $abierto = $this->crearPartidoConFecha(now()->utc()->addMinutes(61), 3, 4);
+
+        $this->actingAs($user)
+            ->get('/pronosticos')
+            ->assertOk()
+            ->assertDontSee('predicciones['.$cerrado->id.']', false)
+            ->assertSee('predicciones['.$abierto->id.']', false)
+            ->assertSee('data-pronostico-partido', false);
+    }
+
+    public function test_closed_match_rejects_the_entire_prediction_batch(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $user = User::factory()->create();
+        $abierto = $this->crearPartidoConFecha(now()->utc()->addMinutes(61));
+        $cerrado = $this->crearPartidoConFecha(now()->utc()->addMinutes(60), 3, 4);
+
+        $this->actingAs($user)
+            ->post('/pronosticos', [
+                'predicciones' => [
+                    $abierto->id => ['goles_local' => 2, 'goles_visitante' => 1],
+                    $cerrado->id => ['goles_local' => 0, 'goles_visitante' => 0],
+                ],
+            ])
+            ->assertSessionHasErrors('predicciones')
+            ->assertSessionHas('security_alert', 'El plazo para registrar apuestas ha cerrado.');
+
+        $this->assertDatabaseCount('predicciones', 0);
+    }
+
+    public function test_empty_pronosticos_form_shows_no_available_matches_message(): void
+    {
+        $user = User::factory()->create();
+        $this->crearPartidoConFecha(now()->utc()->addMinutes(60));
+
+        $this->actingAs($user)
+            ->get('/pronosticos')
+            ->assertOk()
+            ->assertSee('No hay partidos disponibles para pronosticar.')
+            ->assertDontSee('data-pronosticos-submit', false);
+    }
+
+    public function test_dashboard_countdown_uses_the_next_individual_prediction_deadline(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $user = User::factory()->create();
+        $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+        $proximoPartidoAbierto = $this->crearPartidoConFecha(now()->utc()->addMinutes(90), 3, 4);
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee(
+                'data-deadline="'.$proximoPartidoAbierto->fechaLimitePronosticoUtc()->toIso8601String().'"',
+                false
+            )
+            ->assertSee('Pronosticos abiertos');
     }
 
     private function crearPartido(int $localId = 1, int $visitanteId = 2): Partido
