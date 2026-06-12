@@ -16,6 +16,8 @@ class Mundial2026Seeder extends Seeder
     {
         $now = now();
 
+        // Eliminar en orden correcto respetando foreign keys
+        DB::table('predicciones')->delete();
         DB::table('partidos')->delete();
         DB::table('equipos')->delete();
 

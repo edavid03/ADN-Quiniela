@@ -22,7 +22,6 @@ services:
     image: quiniela-app:local
     restart: unless-stopped
     ports:
-      - "${DOCKER_APP_PORT:-8081}:80"
     environment:
       <<: *app-environment
       RUN_MIGRATIONS: "true"
@@ -33,7 +32,6 @@ services:
       mariadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1/login') === false ? 1 : 0);"]
       interval: 10s
       timeout: 5s
       retries: 10

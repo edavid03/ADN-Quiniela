@@ -3,12 +3,10 @@
 use App\Http\Controllers\AdminPartidoResultadoController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PronosticoController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ResultadoController;
 use App\Models\Equipo;
 use App\Models\Partido;
-use App\Models\Prediccion;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,10 +34,6 @@ Route::middleware('auth')->group(function () {
         return view('dashboard', [
             'teamCount' => Equipo::query()->count(),
             'matchCount' => Partido::query()->count(),
-            'predictionCount' => Prediccion::query()
-                ->where('usuario_id', $user->id)
-                ->count(),
-            'predictionDeadline' => $predictionDeadline,
             'nextMatches' => Partido::query()
                 ->with(['local', 'visitante'])
                 ->orderBy('fecha_utc')
@@ -51,8 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index');
     Route::get('/resultados', [ResultadoController::class, 'index'])->name('resultados.index');
-    Route::get('/pronosticos', [PronosticoController::class, 'edit'])->name('pronosticos.edit');
-    Route::post('/pronosticos', [PronosticoController::class, 'update'])->name('pronosticos.update');
 
     Route::middleware('admin')->group(function () {
         Route::get('/admin/dashboard', [AdminPartidoResultadoController::class, 'edit'])->name('admin.dashboard');

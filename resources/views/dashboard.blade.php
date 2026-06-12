@@ -9,14 +9,14 @@
         </div>
     @endif
 
+
     <section class="mb-6 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
             <span class="kicker">FWC26 Quiniela</span>
             <h1 class="mt-3 font-display text-4xl font-black leading-tight text-[var(--app-text)] md:text-6xl">Mesa de la quiniela</h1>
-            <p class="mt-3 max-w-2xl text-lg font-semibold leading-7 text-[var(--app-muted)]">Pronosticos, partidos y ranking del grupo con una identidad inspirada en Monterrey 2026.</p>
+            
         </div>
         <div class="flex flex-wrap gap-3 lg:justify-end">
-            <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
             <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>
@@ -25,7 +25,7 @@
         </div>
     </section>
 
-    <section class="mb-6 grid gap-4 md:grid-cols-3">
+    <section class="mb-6 grid gap-4 md:grid-cols-2">
         <article class="stat-tile" data-mark="48">
             <span class="text-sm font-black uppercase text-[var(--app-muted)]">Equipos</span>
             <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $teamCount }}</strong>
@@ -33,10 +33,6 @@
         <article class="stat-tile" data-mark="26">
             <span class="text-sm font-black uppercase text-[var(--app-muted)]">Partidos</span>
             <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $matchCount }}</strong>
-        </article>
-        <article class="stat-tile" data-mark="3">
-            <span class="text-sm font-black uppercase text-[var(--app-muted)]">Mis pronosticos</span>
-            <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $predictionCount }}</strong>
         </article>
     </section>
 
@@ -61,7 +57,7 @@
                         <span class="flag-chip">{!! $match->visitante?->flagEmojiHtml() !!}</span>
                     </div>
                     <div class="text-sm font-semibold leading-6 text-[var(--app-muted)] lg:text-right">
-                        {{ \Carbon\Carbon::parse($match->fecha_utc)->format('d/m/Y H:i') }} UTC<br>
+                        {{ $match->fechaCaracas()->format('d/m/Y H:i') }}<br>
                         {{ $match->estadio }}
                     </div>
                 </article>
@@ -126,62 +122,4 @@
             </section>
         </aside>
     </div>
-
-    {{-- INICIO SCRIPT CONTADOR REGRESIVO PRONOSTICOS: puedes editar o eliminar este script completo. --}}
-    @if ($predictionDeadline)
-        <script>
-            (() => {
-                const countdown = document.querySelector('[data-prediction-countdown]');
-
-                if (! countdown) {
-                    return;
-                }
-
-                const deadline = new Date(countdown.dataset.deadline).getTime();
-
-                if (Number.isNaN(deadline)) {
-                    return;
-                }
-
-                const fields = {
-                    days: countdown.querySelector('[data-countdown-days]'),
-                    hours: countdown.querySelector('[data-countdown-hours]'),
-                    minutes: countdown.querySelector('[data-countdown-minutes]'),
-                    seconds: countdown.querySelector('[data-countdown-seconds]'),
-                    status: countdown.querySelector('[data-countdown-status]'),
-                };
-
-                const twoDigits = (value) => String(value).padStart(2, '0');
-
-                const renderCountdown = () => {
-                    const remaining = deadline - Date.now();
-
-                    if (remaining <= 0) {
-                        fields.days.textContent = '00';
-                        fields.hours.textContent = '00';
-                        fields.minutes.textContent = '00';
-                        fields.seconds.textContent = '00';
-                        fields.status.textContent = 'Pronosticos cerrados';
-                        return;
-                    }
-
-                    const secondsTotal = Math.floor(remaining / 1000);
-                    const days = Math.floor(secondsTotal / 86400);
-                    const hours = Math.floor((secondsTotal % 86400) / 3600);
-                    const minutes = Math.floor((secondsTotal % 3600) / 60);
-                    const seconds = secondsTotal % 60;
-
-                    fields.days.textContent = twoDigits(days);
-                    fields.hours.textContent = twoDigits(hours);
-                    fields.minutes.textContent = twoDigits(minutes);
-                    fields.seconds.textContent = twoDigits(seconds);
-                    fields.status.textContent = 'Pronosticos abiertos';
-                };
-
-                renderCountdown();
-                window.setInterval(renderCountdown, 1000);
-            })();
-        </script>
-    @endif
-    {{-- FIN SCRIPT CONTADOR REGRESIVO PRONOSTICOS --}}
 @endsection

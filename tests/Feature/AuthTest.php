@@ -70,6 +70,20 @@ class AuthTest extends TestCase
         ])->assertSessionHasErrors('cedula');
     }
 
+    public function test_registration_rejects_invalid_email(): void
+    {
+        $this->post('/register', [
+            'name' => 'Usuario Invalido',
+            'username' => 'usuario_invalido',
+            'cedula' => '12345678',
+            'email' => 'usuario@localhost',
+            'password' => 'clave-segura',
+            'password_confirmation' => 'clave-segura',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertDatabaseMissing('users', ['username' => 'usuario_invalido']);
+    }
+
     public function test_registration_rejects_duplicate_username_and_email(): void
     {
         User::factory()->create([
@@ -111,7 +125,12 @@ class AuthTest extends TestCase
         $this->actingAs($user)
             ->get('/dashboard')
             ->assertOk()
-            ->assertSee('Mesa de la quiniela');
+            ->assertSee('Mesa de la quiniela')
+            ->assertSee('Las apuestas estan cerradas.')
+            ->assertDontSee('Crear o editar pronosticos')
+            ->assertDontSee('Mis pronosticos')
+            ->assertDontSee('Cierre de pronosticos')
+            ->assertDontSee('href="/pronosticos"', false);
     }
 
     public function test_admin_users_see_admin_dashboard_link(): void
@@ -123,7 +142,11 @@ class AuthTest extends TestCase
         $this->actingAs($admin)
             ->get('/dashboard')
             ->assertOk()
-            ->assertSee('Dashboard admin');
+            ->assertSee('Dashboard admin')
+            ->assertDontSee('Crear o editar pronosticos')
+            ->assertDontSee('Mis pronosticos')
+            ->assertDontSee('Cierre de pronosticos')
+            ->assertDontSee('href="/pronosticos"', false);
     }
 
     public function test_users_cannot_login_with_invalid_password(): void

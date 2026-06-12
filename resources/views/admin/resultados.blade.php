@@ -8,11 +8,11 @@
 
         <section class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <h1 class="text-4xl font-extrabold tracking-normal">Resultados de partidos</h1>
+                <h1 class="text-3xl font-extrabold tracking-normal sm:text-4xl">Resultados de partidos</h1>
                 <p class="mt-2 max-w-2xl leading-7 text-[var(--app-muted)]">Solo el administrador puede cargar o actualizar resultados. Al guardar, se recalculan los puntos de los pron&oacute;sticos.</p>
             </div>
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('dashboard') }}" class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-4 py-2.5 font-bold text-[var(--app-primary)] no-underline hover:border-[var(--app-primary)]">Volver</a>
+            <div class="grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:flex-wrap">
+                <a href="{{ route('dashboard') }}" class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-4 py-2.5 text-center font-bold text-[var(--app-primary)] no-underline hover:border-[var(--app-primary)]">Volver</a>
                 @if ($partidos->isNotEmpty())
                     <button class="rounded-lg bg-[var(--app-primary)] px-4 py-2.5 font-extrabold text-white hover:bg-[var(--app-primary-strong)] dark:text-[var(--app-bg)]" type="submit">Guardar resultados</button>
                 @endif
@@ -31,7 +31,7 @@
 
         <section class="overflow-hidden rounded-xl border border-[var(--app-border)] bg-[var(--app-panel)]">
             @forelse ($partidos as $partido)
-                <article class="grid gap-4 border-b border-[var(--app-border)] px-5 py-4 last:border-b-0 lg:grid-cols-[1fr_auto] lg:items-center">
+                <article class="grid gap-4 border-b border-[var(--app-border)] px-4 py-4 last:border-b-0 sm:px-5 lg:grid-cols-[1fr_auto] lg:items-center">
                     <div>
                         <div class="flex min-w-0 flex-wrap items-center gap-2 font-bold">
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--app-panel-soft)]">{!! $partido->local?->flagEmojiHtml() !!}</span>
@@ -41,14 +41,14 @@
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--app-panel-soft)]">{!! $partido->visitante?->flagEmojiHtml() !!}</span>
                         </div>
                         <div class="mt-2 text-sm leading-6 text-[var(--app-muted)]">
-                            {{ \Carbon\Carbon::parse($partido->fecha_utc)->format('d/m/Y H:i') }} UTC
+                            {{ $partido->fechaCaracas()->format('d/m/Y H:i') }}
                             @if ($partido->estadio)
                                 · {{ $partido->estadio }}
                             @endif
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-[minmax(0,5rem)_1rem_minmax(0,5rem)] items-center gap-2">
+                    <div class="mx-auto grid w-full max-w-xs grid-cols-[minmax(0,1fr)_1rem_minmax(0,1fr)] items-center gap-2 lg:mx-0 lg:w-auto lg:grid-cols-[minmax(0,5rem)_1rem_minmax(0,5rem)]">
                         <input name="resultados[{{ $partido->id }}][goles_local]" type="number" min="0" max="99" value="{{ old("resultados.{$partido->id}.goles_local", $partido->goles_local) }}" class="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-3 py-2.5 text-center text-[var(--app-text)] outline-none focus:border-[var(--app-primary)] focus:ring-4 focus:ring-[var(--app-ring)]">
                         <span class="text-center font-extrabold text-[var(--app-muted)]">-</span>
                         <input name="resultados[{{ $partido->id }}][goles_visitante]" type="number" min="0" max="99" value="{{ old("resultados.{$partido->id}.goles_visitante", $partido->goles_visitante) }}" class="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-3 py-2.5 text-center text-[var(--app-text)] outline-none focus:border-[var(--app-primary)] focus:ring-4 focus:ring-[var(--app-ring)]">

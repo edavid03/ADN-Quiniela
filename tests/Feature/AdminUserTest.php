@@ -70,6 +70,24 @@ class AdminUserTest extends TestCase
         $this->assertTrue($user->isApproved());
     }
 
+    public function test_admin_cannot_create_user_with_invalid_email(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->post('/admin/usuarios', [
+                'name' => 'Usuario Invalido',
+                'username' => 'usuario_invalido',
+                'cedula' => '23456789',
+                'email' => 'usuario@localhost',
+                'password' => 'clave-segura',
+                'password_confirmation' => 'clave-segura',
+            ])
+            ->assertSessionHasErrors('email');
+
+        $this->assertDatabaseMissing('users', ['username' => 'usuario_invalido']);
+    }
+
     public function test_admin_can_approve_pending_user(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);

@@ -73,6 +73,25 @@ class RankingTest extends TestCase
             ->assertSeeInOrder(['Bruno', 'Ana']);
     }
 
+    public function test_admin_is_not_listed_in_rankings(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Participante',
+            'username' => 'participante',
+        ]);
+        User::factory()->create([
+            'name' => 'Administrador',
+            'username' => 'administrador',
+            'is_admin' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get('/rankings')
+            ->assertOk()
+            ->assertSee('Participante')
+            ->assertDontSee('Administrador');
+    }
+
     private function crearPartido(): Partido
     {
         $local = Equipo::create([
