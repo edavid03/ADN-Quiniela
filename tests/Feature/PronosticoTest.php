@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Equipo;
 use App\Models\Partido;
+use App\Models\Prediccion;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,16 +16,16 @@ class PronosticoTest extends TestCase
 
     public function test_guests_cannot_access_pronosticos_route(): void
     {
-        $this->get('/pronosticos')->assertNotFound();
+        $this->get('/pronosticos')->assertRedirect('/login');
     }
 
-    public function test_users_cannot_access_pronosticos_route(): void
+    public function test_users_can_access_pronosticos_route(): void
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)
             ->get('/pronosticos')
-            ->assertNotFound();
+            ->assertOk();
     }
 
     public function test_admins_cannot_access_pronosticos_route(): void
@@ -32,10 +34,11 @@ class PronosticoTest extends TestCase
 
         $this->actingAs($admin)
             ->get('/pronosticos')
-            ->assertNotFound();
+            ->assertRedirect('/dashboard')
+            ->assertSessionHas('security_alert', 'El usuario administrador no puede registrar pronosticos.');
     }
 
-    public function test_users_cannot_create_or_update_pronosticos(): void
+    public function test_incomplete_pronostico_is_rejected(): void
     {
         $user = User::factory()->create();
         $partido = $this->crearPartido();
@@ -49,9 +52,10 @@ class PronosticoTest extends TestCase
                     ],
                 ],
             ])
-            ->assertOk()
-            ->assertSee('Intentaste guardar un pronostico incompleto.')
-            ->assertDontSee('Cada pronostico debe tener goles de ambos equipos.');
+            ->assertSessionHasErrors('predicciones')
+            ->assertSessionHas('security_alert', 'Intentaste guardar un pronostico incompleto.');
+
+        $this->assertDatabaseCount('predicciones', 0);
     }
 
     public function test_pronosticos_after_deadline_are_rejected_with_security_alert(): void
@@ -112,7 +116,7 @@ class PronosticoTest extends TestCase
                     ],
                 ],
             ])
-            ->assertNotFound();
+            ->assertSessionHasErrors('predicciones');
 
         $this->assertDatabaseCount('predicciones', 0);
     }
@@ -213,15 +217,15 @@ class PronosticoTest extends TestCase
     private function crearPartidoConFecha($fechaUtc, int $localId = 1, int $visitanteId = 2): Partido
     {
         $local = Equipo::create([
-            'id' => 1,
-            'name' => 'Local FC',
+            'id' => $localId,
+            'name' => "Local {$localId} FC",
             'code' => 'LOC',
             'grupo' => 'A',
         ]);
 
         $visitante = Equipo::create([
-            'id' => 2,
-            'name' => 'Visitante FC',
+            'id' => $visitanteId,
+            'name' => "Visitante {$visitanteId} FC",
             'code' => 'VIS',
             'grupo' => 'A',
         ]);
@@ -229,7 +233,7 @@ class PronosticoTest extends TestCase
         return Partido::create([
             'local_id' => $local->id,
             'visitante_id' => $visitante->id,
-            'fecha_utc' => now()->utc()->addWeeks(3)->format('Y-m-d H:i:s'),
+            'fecha_utc' => $fechaUtc->format('Y-m-d H:i:s'),
             'estadio' => 'Estadio de Prueba',
             'fase' => 'Grupos',
             'goles_local' => null,

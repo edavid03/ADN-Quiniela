@@ -41,7 +41,7 @@
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--app-panel-soft)]">{!! $partido->visitante?->flagEmojiHtml() !!}</span>
                         </div>
                         <div class="mt-2 text-sm leading-6 text-[var(--app-muted)]">
-                            {{ $partido->fechaCaracas()->format('d/m/Y H:i') }}
+                            {{ $partido->fechaCaracas()->format('d/m/Y H:i') }} hora de Caracas
                             @if ($partido->estadio)
                                 · {{ $partido->estadio }}
                             @endif

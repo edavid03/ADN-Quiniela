@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Partido;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AdminPartidoResultadoController extends Controller
@@ -42,6 +42,8 @@ class AdminPartidoResultadoController extends Controller
                 ->withInput();
         }
 
+        $resultadosCompletos = [];
+
         foreach ($resultados as $partidoId => $resultado) {
             $golesLocal = $resultado['goles_local'] ?? null;
             $golesVisitante = $resultado['goles_visitante'] ?? null;
@@ -57,11 +59,20 @@ class AdminPartidoResultadoController extends Controller
                     ->withInput();
             }
 
-            $partidos->get((int) $partidoId)->finalizarPartido(
-                (int) $golesLocal,
-                (int) $golesVisitante,
-            );
+            $resultadosCompletos[$partidoId] = [
+                'goles_local' => (int) $golesLocal,
+                'goles_visitante' => (int) $golesVisitante,
+            ];
         }
+
+        DB::transaction(function () use ($resultadosCompletos, $partidos): void {
+            foreach ($resultadosCompletos as $partidoId => $resultado) {
+                $partidos->get((int) $partidoId)->finalizarPartido(
+                    $resultado['goles_local'],
+                    $resultado['goles_visitante'],
+                );
+            }
+        });
 
         return redirect()
             ->route('admin.resultados.edit')

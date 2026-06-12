@@ -150,18 +150,40 @@ class AdminResultadoTest extends TestCase
             ->assertDontSee('Cada resultado debe tener goles de ambos equipos.');
     }
 
-    private function crearPartido(): Partido
+    public function test_incomplete_result_rejects_the_entire_batch(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $primerPartido = $this->crearPartido();
+        $segundoPartido = $this->crearPartido(3, 4);
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $primerPartido->id => ['goles_local' => 2, 'goles_visitante' => 1],
+                    $segundoPartido->id => ['goles_local' => 1, 'goles_visitante' => null],
+                ],
+            ])
+            ->assertSessionHasErrors('resultados');
+
+        $this->assertDatabaseHas('partidos', [
+            'id' => $primerPartido->id,
+            'goles_local' => null,
+            'goles_visitante' => null,
+        ]);
+    }
+
+    private function crearPartido(int $localId = 1, int $visitanteId = 2): Partido
     {
         $local = Equipo::create([
-            'id' => 1,
-            'name' => 'Local FC',
+            'id' => $localId,
+            'name' => "Local {$localId} FC",
             'code' => 'LOC',
             'grupo' => 'A',
         ]);
 
         $visitante = Equipo::create([
-            'id' => 2,
-            'name' => 'Visitante FC',
+            'id' => $visitanteId,
+            'name' => "Visitante {$visitanteId} FC",
             'code' => 'VIS',
             'grupo' => 'A',
         ]);

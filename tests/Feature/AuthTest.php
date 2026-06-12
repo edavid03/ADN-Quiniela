@@ -126,11 +126,10 @@ class AuthTest extends TestCase
             ->get('/dashboard')
             ->assertOk()
             ->assertSee('Mesa de la quiniela')
-            ->assertSee('Las apuestas estan cerradas.')
-            ->assertDontSee('Crear o editar pronosticos')
-            ->assertDontSee('Mis pronosticos')
-            ->assertDontSee('Cierre de pronosticos')
-            ->assertDontSee('href="/pronosticos"', false);
+            ->assertSee('Crear o editar pronosticos')
+            ->assertSee('Mis pronosticos')
+            ->assertSee('Cierre de pronosticos')
+            ->assertSee('href="'.route('pronosticos.edit').'"', false);
     }
 
     public function test_admin_users_see_admin_dashboard_link(): void
