@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
         $nextOpenMatch = Partido::query()
+            ->with(['local', 'visitante'])
             ->abiertosParaPronosticos()
             ->orderBy('fecha_utc')
             ->first();
@@ -40,6 +41,7 @@ Route::middleware('auth')->group(function () {
                 ->where('usuario_id', $user->id)
                 ->count(),
             'predictionDeadline' => $predictionDeadline,
+            'nextOpenMatch' => $nextOpenMatch,
             'nextMatches' => Partido::query()
                 ->with(['local', 'visitante'])
                 ->where('fecha_utc', '>', now()->utc())

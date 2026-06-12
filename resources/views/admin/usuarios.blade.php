@@ -3,13 +3,13 @@
 @section('title', 'Gestionar usuarios | '.config('app.name', 'Quiniela'))
 
 @section('content')
-    <section class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section class="page-header">
         <div>
             <span class="kicker">Administraci&oacute;n</span>
-            <h1 class="mt-3 font-display text-4xl font-black text-[var(--app-text)] md:text-5xl">Gesti&oacute;n de usuarios</h1>
-            <p class="mt-2 max-w-2xl font-semibold leading-7 text-[var(--app-muted)]">Acepta solicitudes, crea accesos manuales y elimina cuentas que todav&iacute;a no tengan pron&oacute;sticos.</p>
+            <h1 class="page-title">Gesti&oacute;n de usuarios</h1>
+            <p class="page-copy">Acepta solicitudes, crea accesos manuales y elimina cuentas que todav&iacute;a no tengan pron&oacute;sticos.</p>
         </div>
-        <div class="flex flex-wrap gap-3">
+        <div class="page-actions">
             <a href="{{ route('admin.resultados.edit') }}" class="btn btn-secondary">Gestionar resultados</a>
             <a href="{{ route('dashboard') }}" class="btn btn-secondary">Volver</a>
         </div>
@@ -26,7 +26,7 @@
     @endif
 
     <div class="grid gap-6 xl:grid-cols-[.82fr_1.18fr]">
-        <section class="surface-strong h-fit p-5">
+        <section class="surface-strong h-fit p-4 sm:p-5">
             <span class="kicker">Alta directa</span>
             <h2 class="mt-3 font-display text-2xl font-black">Crear usuario aprobado</h2>
             <p class="mt-2 text-sm font-semibold leading-6 text-[var(--app-muted)]">La cuenta podr&aacute; iniciar sesi&oacute;n inmediatamente.</p>
@@ -73,12 +73,12 @@
                 </div>
 
                 @forelse ($pendingUsers as $user)
-                    <article class="grid gap-4 border-b border-[var(--app-border)] px-5 py-4 last:border-b-0 md:grid-cols-[1fr_auto] md:items-center">
+                    <article class="grid gap-4 border-b border-[var(--app-border)] px-4 py-4 last:border-b-0 sm:px-5 md:grid-cols-[1fr_auto] md:items-center">
                         <div class="min-w-0">
                             <strong class="block truncate font-display text-lg">{{ $user->name }}</strong>
-                            <span class="block truncate text-sm font-semibold text-[var(--app-muted)]">{{ '@'.$user->username }} &middot; {{ $user->email }} &middot; C.I. {{ $user->cedula }}</span>
+                            <span class="block break-words text-sm font-semibold leading-6 text-[var(--app-muted)]">{{ '@'.$user->username }} &middot; {{ $user->email }} &middot; C.I. {{ $user->cedula }}</span>
                         </div>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="grid grid-cols-2 gap-2 md:flex">
                             <form method="POST" action="{{ route('admin.usuarios.approve', $user) }}">
                                 @csrf
                                 @method('PATCH')
@@ -103,7 +103,7 @@
                 </div>
 
                 @foreach ($approvedUsers as $user)
-                    <article class="grid gap-4 border-b border-[var(--app-border)] px-5 py-4 last:border-b-0 md:grid-cols-[1fr_auto] md:items-center">
+                    <article class="grid gap-4 border-b border-[var(--app-border)] px-4 py-4 last:border-b-0 sm:px-5 md:grid-cols-[1fr_auto] md:items-center">
                         <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 <strong class="truncate font-display text-lg">{{ $user->name }}</strong>
@@ -111,7 +111,7 @@
                                     <span class="rounded-lg bg-[var(--app-primary)] px-2 py-1 text-xs font-black uppercase text-white dark:text-[#170f2f]">Admin</span>
                                 @endif
                             </div>
-                            <span class="block truncate text-sm font-semibold text-[var(--app-muted)]">{{ '@'.$user->username }} &middot; {{ $user->email }} &middot; C.I. {{ $user->cedula ?: 'pendiente' }}</span>
+                            <span class="block break-words text-sm font-semibold leading-6 text-[var(--app-muted)]">{{ '@'.$user->username }} &middot; {{ $user->email }} &middot; C.I. {{ $user->cedula ?: 'pendiente' }}</span>
                             <span class="mt-1 block text-xs font-extrabold uppercase text-[var(--app-secondary)]">{{ $user->predicciones_count }} pron&oacute;sticos</span>
                         </div>
                         @unless ($user->is_admin)

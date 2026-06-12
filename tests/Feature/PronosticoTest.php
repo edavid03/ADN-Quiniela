@@ -25,7 +25,8 @@ class PronosticoTest extends TestCase
 
         $this->actingAs($user)
             ->get('/pronosticos')
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('Predicciones');
     }
 
     public function test_admins_cannot_access_pronosticos_route(): void
@@ -206,6 +207,9 @@ class PronosticoTest extends TestCase
                 'data-deadline="'.$proximoPartidoAbierto->fechaLimitePronosticoUtc()->toIso8601String().'"',
                 false
             )
+            ->assertSee('Proximo cierre')
+            ->assertSee('Local 3 FC')
+            ->assertSee('Visitante 4 FC')
             ->assertSee('Pronosticos abiertos');
     }
 

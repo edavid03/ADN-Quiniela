@@ -10,13 +10,13 @@
     @endif
 
 
-    <section class="mb-6 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+    <section class="page-header">
         <div>
             <span class="kicker">FWC26 Quiniela</span>
-            <h1 class="mt-3 font-display text-4xl font-black leading-tight text-[var(--app-text)] md:text-6xl">Mesa de la quiniela</h1>
+            <h1 class="page-title">Mesa de la quiniela</h1>
             
         </div>
-        <div class="flex flex-wrap gap-3 lg:justify-end">
+        <div class="page-actions">
             @unless (auth()->user()->is_admin)
                 <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
             @endunless
@@ -28,7 +28,7 @@
         </div>
     </section>
 
-    <section class="mb-6 grid gap-4 {{ auth()->user()->is_admin ? 'md:grid-cols-2' : 'md:grid-cols-3' }}">
+    <section class="mb-6 grid grid-cols-2 gap-3 sm:gap-4 {{ auth()->user()->is_admin ? '' : 'sm:grid-cols-3' }}">
         <article class="stat-tile" data-mark="48">
             <span class="text-sm font-black uppercase text-[var(--app-muted)]">Equipos</span>
             <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $teamCount }}</strong>
@@ -38,7 +38,7 @@
             <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $matchCount }}</strong>
         </article>
         @unless (auth()->user()->is_admin)
-            <article class="stat-tile" data-mark="3">
+            <article class="stat-tile col-span-2 sm:col-span-1" data-mark="3">
                 <span class="text-sm font-black uppercase text-[var(--app-muted)]">Mis pronosticos</span>
                 <strong class="relative z-10 mt-3 block font-display text-5xl font-black text-[var(--app-text)]">{{ $predictionCount }}</strong>
             </article>
@@ -58,12 +58,16 @@
 
             @forelse ($nextMatches as $match)
                 <article class="match-row lg:grid-cols-[1fr_auto] lg:items-center">
-                    <div class="flex min-w-0 flex-wrap items-center gap-2 font-extrabold">
-                        <span class="flag-chip">{!! $match->local?->flagEmojiHtml() !!}</span>
-                        <span>{{ $match->local->name ?? 'Local' }}</span>
-                        <span class="rounded-full bg-[var(--app-secondary)] px-2 py-1 text-xs font-black text-white">vs</span>
-                        <span>{{ $match->visitante->name ?? 'Visitante' }}</span>
-                        <span class="flag-chip">{!! $match->visitante?->flagEmojiHtml() !!}</span>
+                    <div class="team-versus">
+                        <div class="team-versus-side">
+                            <span class="flag-chip">{!! $match->local?->flagEmojiHtml() !!}</span>
+                            <span class="team-versus-name">{{ $match->local->name ?? 'Local' }}</span>
+                        </div>
+                        <span class="versus-badge">vs</span>
+                        <div class="team-versus-side">
+                            <span class="team-versus-name">{{ $match->visitante->name ?? 'Visitante' }}</span>
+                            <span class="flag-chip">{!! $match->visitante?->flagEmojiHtml() !!}</span>
+                        </div>
                     </div>
                     <div class="text-sm font-semibold leading-6 text-[var(--app-muted)] lg:text-right">
                         {{ $match->fechaCaracas()->format('d/m/Y H:i') }}<br>
@@ -86,6 +90,23 @@
                         data-prediction-countdown
                         data-deadline="{{ $predictionDeadline->copy()->utc()->toIso8601String() }}"
                     >
+                        <div class="mb-3 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] p-3">
+                            <span class="block text-[.65rem] font-black uppercase tracking-wide text-[var(--app-muted)]">Proximo cierre</span>
+                            <div class="team-versus mt-2 font-display text-sm text-[var(--app-text)]">
+                                <div class="team-versus-side">
+                                    <span class="flag-chip">{!! $nextOpenMatch->local?->flagEmojiHtml() !!}</span>
+                                    <span class="team-versus-name">{{ $nextOpenMatch->local->name ?? 'Local' }}</span>
+                                </div>
+                                <span class="versus-badge">vs</span>
+                                <div class="team-versus-side">
+                                    <span class="team-versus-name">{{ $nextOpenMatch->visitante->name ?? 'Visitante' }}</span>
+                                    <span class="flag-chip">{!! $nextOpenMatch->visitante?->flagEmojiHtml() !!}</span>
+                                </div>
+                            </div>
+                            <span class="mt-2 block text-xs font-bold text-[var(--app-muted)]">
+                                Cierra {{ $predictionDeadline->copy()->setTimezone('America/Caracas')->format('d/m/Y H:i') }}
+                            </span>
+                        </div>
                         <div style="display: flex; width: 100%; overflow: hidden; border: 1px solid var(--app-border); border-radius: .5rem; background: var(--app-panel-soft);">
                             <div style="flex: 1 1 0; min-width: 0; border-right: 1px solid var(--app-border); padding: .5rem .35rem; text-align: center;">
                                 <strong class="font-display text-[var(--app-text)]" style="display: block; font-size: 1.35rem; font-weight: 900; line-height: 1;" data-countdown-days>--</strong>
