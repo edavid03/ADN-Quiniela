@@ -3,13 +3,13 @@
 @section('title', 'Resultados | '.config('app.name', 'Quiniela'))
 
 @section('content')
-    <section class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <section class="page-header">
         <div>
             <span class="kicker">Marcadores</span>
-            <h1 class="mt-3 font-display text-3xl font-black leading-tight text-[var(--app-text)] sm:text-4xl md:text-5xl">Resultados de partidos</h1>
-            <p class="mt-2 max-w-2xl leading-7 text-[var(--app-muted)]">Consulta todos los partidos cargados y los marcadores oficiales cuando el administrador los registre.</p>
+            <h1 class="page-title">Resultados de partidos</h1>
+            <p class="page-copy">Consulta todos los partidos cargados y los marcadores oficiales cuando el administrador los registre.</p>
         </div>
-        <div class="grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:flex-wrap">
+        <div class="page-actions">
             <a href="{{ route('dashboard') }}" class="btn btn-secondary px-3 sm:px-4">Volver a mesa</a>
             <a href="{{ route('rankings.index') }}" class="btn btn-primary px-3 sm:px-4">Ver ranking</a>
         </div>
@@ -24,7 +24,7 @@
             <span class="w-fit rounded-lg bg-[var(--app-panel-soft)] px-3 py-2 text-sm font-extrabold text-[var(--app-muted)]">{{ $partidos->count() }} partidos</span>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-3 lg:gap-2">
+        <div class="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:p-4 xl:grid-cols-3">
             @forelse ($partidos as $partido)
                 @php
                     $tieneResultado = $partido->goles_local !== null && $partido->goles_visitante !== null;
@@ -33,7 +33,7 @@
                     $prediccionEvaluada = $tienePrediccion && $prediccion->puntos !== null;
                 @endphp
 
-                <article class="grid gap-3 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] p-3 text-xs sm:min-h-40 sm:gap-2 sm:p-2">
+                <article class="grid gap-3 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] p-3 text-xs sm:min-h-44 sm:p-4">
                     <div>
                         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-1 text-center text-[11px] font-extrabold leading-tight">
                             <div class="min-w-0">

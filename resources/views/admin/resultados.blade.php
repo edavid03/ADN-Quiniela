@@ -6,15 +6,16 @@
     <form method="POST" action="{{ route('admin.resultados.update') }}">
         @csrf
 
-        <section class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <section class="page-header">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-normal sm:text-4xl">Resultados de partidos</h1>
-                <p class="mt-2 max-w-2xl leading-7 text-[var(--app-muted)]">Solo el administrador puede cargar o actualizar resultados. Al guardar, se recalculan los puntos de los pron&oacute;sticos.</p>
+                <span class="kicker">Administraci&oacute;n</span>
+                <h1 class="page-title">Resultados de partidos</h1>
+                <p class="page-copy">Solo el administrador puede cargar o actualizar resultados. Al guardar, se recalculan los puntos de los pron&oacute;sticos.</p>
             </div>
-            <div class="grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:flex-wrap">
-                <a href="{{ route('dashboard') }}" class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-4 py-2.5 text-center font-bold text-[var(--app-primary)] no-underline hover:border-[var(--app-primary)]">Volver</a>
+            <div class="page-actions">
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">Volver</a>
                 @if ($partidos->isNotEmpty())
-                    <button class="rounded-lg bg-[var(--app-primary)] px-4 py-2.5 font-extrabold text-white hover:bg-[var(--app-primary-strong)] dark:text-[var(--app-bg)]" type="submit">Guardar resultados</button>
+                    <button class="btn btn-primary" type="submit">Guardar resultados</button>
                 @endif
             </div>
         </section>
@@ -33,12 +34,10 @@
             @forelse ($partidos as $partido)
                 <article class="grid gap-4 border-b border-[var(--app-border)] px-4 py-4 last:border-b-0 sm:px-5 lg:grid-cols-[1fr_auto] lg:items-center">
                     <div>
-                        <div class="flex min-w-0 flex-wrap items-center gap-2 font-bold">
-                            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--app-panel-soft)]">{!! $partido->local?->flagEmojiHtml() !!}</span>
-                            <span>{{ $partido->local->name ?? 'Local' }}</span>
-                            <span class="text-sm text-[var(--app-muted)]">vs</span>
-                            <span>{{ $partido->visitante->name ?? 'Visitante' }}</span>
-                            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--app-panel-soft)]">{!! $partido->visitante?->flagEmojiHtml() !!}</span>
+                        <div class="team-versus">
+                            <div class="team-versus-side"><span class="flag-chip">{!! $partido->local?->flagEmojiHtml() !!}</span><span class="team-versus-name">{{ $partido->local->name ?? 'Local' }}</span></div>
+                            <span class="versus-badge">vs</span>
+                            <div class="team-versus-side"><span class="team-versus-name">{{ $partido->visitante->name ?? 'Visitante' }}</span><span class="flag-chip">{!! $partido->visitante?->flagEmojiHtml() !!}</span></div>
                         </div>
                         <div class="mt-2 text-sm leading-6 text-[var(--app-muted)]">
                             {{ $partido->fechaCaracas()->format('d/m/Y H:i') }} hora de Caracas
@@ -48,10 +47,10 @@
                         </div>
                     </div>
 
-                    <div class="mx-auto grid w-full max-w-xs grid-cols-[minmax(0,1fr)_1rem_minmax(0,1fr)] items-center gap-2 lg:mx-0 lg:w-auto lg:grid-cols-[minmax(0,5rem)_1rem_minmax(0,5rem)]">
-                        <input name="resultados[{{ $partido->id }}][goles_local]" type="number" min="0" max="99" value="{{ old("resultados.{$partido->id}.goles_local", $partido->goles_local) }}" class="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-3 py-2.5 text-center text-[var(--app-text)] outline-none focus:border-[var(--app-primary)] focus:ring-4 focus:ring-[var(--app-ring)]">
+                    <div class="score-control">
+                        <input aria-label="Goles de {{ $partido->local->name ?? 'Local' }}" name="resultados[{{ $partido->id }}][goles_local]" type="number" min="0" max="99" value="{{ old("resultados.{$partido->id}.goles_local", $partido->goles_local) }}">
                         <span class="text-center font-extrabold text-[var(--app-muted)]">-</span>
-                        <input name="resultados[{{ $partido->id }}][goles_visitante]" type="number" min="0" max="99" value="{{ old("resultados.{$partido->id}.goles_visitante", $partido->goles_visitante) }}" class="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-3 py-2.5 text-center text-[var(--app-text)] outline-none focus:border-[var(--app-primary)] focus:ring-4 focus:ring-[var(--app-ring)]">
+                        <input aria-label="Goles de {{ $partido->visitante->name ?? 'Visitante' }}" name="resultados[{{ $partido->id }}][goles_visitante]" type="number" min="0" max="99" value="{{ old("resultados.{$partido->id}.goles_visitante", $partido->goles_visitante) }}">
                     </div>
                 </article>
             @empty

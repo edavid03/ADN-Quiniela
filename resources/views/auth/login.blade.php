@@ -5,23 +5,23 @@
 @section('content')
     <section class="relative w-full max-w-6xl overflow-hidden rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] shadow-[0_30px_90px_rgba(18,11,36,.18)]">
 
-        <div class="relative grid min-h-[38rem] lg:grid-cols-[1.05fr_.95fr]">
-            <aside class="relative overflow-hidden bg-[var(--fwc-primary)] p-6 text-[var(--fwc-aux-cream)] sm:p-8 lg:p-10">
+        <div class="relative grid lg:min-h-[38rem] lg:grid-cols-[1.05fr_.95fr]">
+            <aside class="relative overflow-hidden bg-[var(--fwc-primary)] p-5 text-[var(--fwc-aux-cream)] sm:p-8 lg:p-10">
                 <div class="absolute inset-0 opacity-45" style="background-image: radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--fwc-red) 42%, transparent), transparent 12rem);"></div>
                 <div class="relative flex h-full flex-col justify-between gap-10">
                     <div>
-                        <span class="grid h-28 w-28 place-items-center rounded-lg bg-white p-3 shadow-[0_12px_0_rgba(0,0,0,.22)]">
+                        <span class="grid h-20 w-20 place-items-center rounded-lg bg-white p-2 shadow-[0_8px_0_rgba(0,0,0,.22)] sm:h-28 sm:w-28 sm:p-3 sm:shadow-[0_12px_0_rgba(0,0,0,.22)]">
                             <img src="{{ asset('images/fifa-world-cup-2026.svg') }}" alt="FIFA World Cup 2026" class="h-full w-full object-contain" loading="eager" decoding="async">
                         </span>
 
                         <div class="mt-8 max-w-xl">
                             <span class="inline-flex rounded-lg border border-white/20 bg-white/10 px-3 py-2 font-display text-xs font-black uppercase text-white">Quiniela privada &middot; #SOMOS26</span>
-                            <h1 class="mt-5 font-display text-5xl font-black leading-[1.02] text-white md:text-7xl">Vive cada marcador</h1>
+                            <h1 class="mt-5 font-display text-4xl font-black leading-[1.02] text-white sm:text-5xl md:text-7xl">Vive cada marcador</h1>
                             <p class="mt-5 max-w-md text-lg font-semibold leading-7 text-white/82">Una mesa de pronosticos con ritmo de torneo: calendario, puntos y ranking para seguir cada fecha del Mundial 2026.</p>
                         </div>
                     </div>
 
-                    <div class="grid gap-3 sm:grid-cols-3">
+                    <div class="hidden gap-3 sm:grid sm:grid-cols-3">
                         <div class="rounded-lg border border-white/15 bg-white/10 p-4">
                             <span class="block font-display text-3xl font-black text-[var(--fwc-red)]">48</span>
                             <span class="text-sm font-extrabold text-white/78">equipos</span>
@@ -38,8 +38,8 @@
                 </div>
             </aside>
 
-            <div class="flex items-center p-5 sm:p-8 lg:p-10">
-                <section class="surface-strong w-full p-6 sm:p-8">
+            <div class="flex items-center p-3 sm:p-8 lg:p-10">
+                <section class="surface-strong w-full p-5 sm:p-8">
                     <div class="mb-8">
                        
                         <h2 class="mt-3 font-display text-3xl font-black leading-tight text-[var(--app-text)] sm:text-4xl">Entra a tu tablero</h2>

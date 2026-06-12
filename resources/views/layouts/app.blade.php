@@ -24,7 +24,7 @@
     <body data-auth="{{ auth()->check() ? 'auth' : 'guest' }}" class="min-h-screen antialiased">
         @auth
             <header class="sticky top-0 z-30 border-b border-[var(--app-border)] bg-[var(--app-panel)]/88 backdrop-blur-xl">
-                <div class="app-shell flex items-center justify-between gap-2 py-1.5 md:flex-wrap md:gap-4 md:py-3">
+                <div class="app-shell flex items-center justify-between gap-2 py-2 lg:flex-wrap lg:gap-4 lg:py-3">
                     <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-2 no-underline md:gap-3">
                         <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] p-1 shadow-[0_4px_0_color-mix(in_srgb,var(--app-primary-strong)_70%,#000)] md:h-14 md:w-14 md:p-1.5 md:shadow-[0_8px_0_color-mix(in_srgb,var(--app-primary-strong)_70%,#000)]">
                             <img src="{{ asset('images/fifa-world-cup-2026.svg') }}" alt="FIFA World Cup 2026" class="h-full w-full object-contain dark:brightness-0 dark:invert" loading="eager" decoding="async">
@@ -35,8 +35,11 @@
                         </span>
                     </a>
 
-                    <nav class="hidden flex-wrap items-center gap-2 text-sm md:flex">
+                    <nav class="hidden flex-wrap items-center gap-2 text-sm lg:flex">
                         <a href="{{ route('dashboard') }}" class="btn btn-secondary {{ request()->routeIs('dashboard') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Mesa</a>
+                        @unless (auth()->user()->is_admin)
+                            <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Predicciones</a>
+                        @endunless
                         <a href="{{ route('resultados.index') }}" class="btn btn-secondary {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Resultados</a>
                         <a href="{{ route('rankings.index') }}" class="btn btn-secondary {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Ranking</a>
                         @if (auth()->user()->is_admin)
@@ -46,8 +49,8 @@
                     </nav>
 
                     <div class="flex min-w-0 items-center gap-1.5 text-xs md:flex-wrap md:gap-2 md:text-sm">
-                        <span class="max-w-24 truncate rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-2 py-1.5 font-bold text-[var(--app-muted)] md:max-w-none md:px-3 md:py-2">{{ auth()->user()->name }}</span>
-                        <button type="button" data-theme-toggle class="btn btn-secondary hidden md:inline-flex">Tema</button>
+                        <span class="hidden max-w-40 truncate rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-3 py-2 font-bold text-[var(--app-muted)] sm:block xl:max-w-56">{{ auth()->user()->name }}</span>
+                        <button type="button" data-theme-toggle class="btn btn-secondary hidden lg:inline-flex">Tema</button>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="btn btn-secondary min-h-0 px-2.5 py-1.5 text-xs md:min-h-11 md:px-4 md:py-2.5 md:text-sm">Salir</button>
@@ -56,16 +59,19 @@
                 </div>
             </header>
 
-            <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--app-border)] bg-[var(--app-panel)]/94 px-3 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(18,11,36,.14)] backdrop-blur-xl md:hidden" aria-label="Navegacion principal">
-                <div class="mx-auto grid max-w-md grid-cols-3 gap-2">
+            <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--app-border)] bg-[var(--app-panel)]/94 px-2 pb-[calc(.6rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(18,11,36,.14)] backdrop-blur-xl lg:hidden" aria-label="Navegacion principal">
+                <div class="mx-auto grid max-w-md {{ auth()->user()->is_admin ? 'grid-cols-3' : 'grid-cols-4' }} gap-2">
                     <a href="{{ route('dashboard') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('dashboard') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Mesa</a>
+                    @unless (auth()->user()->is_admin)
+                        <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Predicciones</a>
+                    @endunless
                     <a href="{{ route('resultados.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Resultados</a>
                     <a href="{{ route('rankings.index') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Ranking</a>
                 </div>
             </nav>
         @endauth
 
-        <main class="page-fade @auth app-shell pb-28 pt-5 md:py-8 @else grid min-h-screen place-items-center px-4 py-10 @endauth">
+        <main class="page-fade @auth app-shell pb-28 pt-5 lg:py-8 @else grid min-h-screen place-items-center px-3 py-5 sm:px-4 sm:py-10 @endauth">
             @yield('content')
         </main>
     </body>
