@@ -17,9 +17,7 @@
             
         </div>
         <div class="page-actions">
-            @unless (auth()->user()->is_admin)
-                <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
-            @endunless
+           
             <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>

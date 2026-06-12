@@ -39,7 +39,7 @@
                     data-deadline="{{ $partido->fechaLimitePronosticoUtc()->toIso8601String() }}"
                 >
                     <div>
-                        <div class="team-versus">
+                        <div class="team-versus pronostico-versus">
                             <div class="team-versus-side">
                                 <span class="flag-chip">{!! $partido->local?->flagEmojiHtml() !!}</span>
                                 <span class="team-versus-name">{{ $partido->local->name ?? 'Local' }}</span>

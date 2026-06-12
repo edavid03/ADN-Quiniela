@@ -116,7 +116,8 @@
     }
 
     button,
-    input {
+    input,
+    textarea {
         font: inherit;
     }
 
@@ -128,13 +129,15 @@
     input[type="text"],
     input[type="email"],
     input[type="password"],
-    input[type="number"] {
+    input[type="number"],
+    textarea {
         border: 1px solid var(--app-border);
         background: var(--app-panel-strong);
         color: var(--app-text);
     }
 
-    input:focus {
+    input:focus,
+    textarea:focus {
         outline: none;
         border-color: var(--app-accent-2);
         box-shadow: 0 0 0 4px var(--app-ring);
@@ -283,6 +286,22 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    .pronostico-versus {
+        display: inline-flex;
+        width: fit-content;
+        max-width: 100%;
+        gap: .45rem;
+    }
+
+    .pronostico-versus .team-versus-side {
+        flex: 0 1 auto;
+    }
+
+    .pronostico-versus .team-versus-side:last-child {
+        justify-content: flex-start;
+        text-align: left;
     }
 
     .versus-badge {
