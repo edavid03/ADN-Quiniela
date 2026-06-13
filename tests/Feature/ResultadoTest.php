@@ -126,8 +126,9 @@ class ResultadoTest extends TestCase
         $this->actingAs($user)
             ->get('/resultados')
             ->assertOk()
-            ->assertSee('11/06/2026 20:30')
+            ->assertSee('11/06/2026 8:30 PM')
             ->assertSee('hora de Caracas')
+            ->assertDontSee('11/06/2026 20:30')
             ->assertDontSee('12/06/2026 00:30 UTC');
     }
 }

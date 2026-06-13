@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="text-sm font-semibold leading-6 text-[var(--app-muted)] lg:text-right">
-                        {{ $match->fechaCaracas()->format('d/m/Y H:i') }}<br>
+                        {{ $match->fechaCaracas()->format('d/m/Y g:i A') }}<br>
                         {{ $match->estadio }}
                     </div>
                 </article>
@@ -102,7 +102,7 @@
                                 </div>
                             </div>
                             <span class="mt-2 block text-xs font-bold text-[var(--app-muted)]">
-                                Cierra {{ $predictionDeadline->copy()->setTimezone('America/Caracas')->format('d/m/Y H:i') }}
+                                Cierra {{ $predictionDeadline->copy()->setTimezone('America/Caracas')->format('d/m/Y g:i A') }}
                             </span>
                         </div>
                         <div style="display: flex; width: 100%; overflow: hidden; border: 1px solid var(--app-border); border-radius: .5rem; background: var(--app-panel-soft);">

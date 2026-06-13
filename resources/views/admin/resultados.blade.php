@@ -40,7 +40,7 @@
                             <div class="team-versus-side"><span class="team-versus-name">{{ $partido->visitante->name ?? 'Visitante' }}</span><span class="flag-chip">{!! $partido->visitante?->flagEmojiHtml() !!}</span></div>
                         </div>
                         <div class="mt-2 text-sm leading-6 text-[var(--app-muted)]">
-                            {{ $partido->fechaCaracas()->format('d/m/Y H:i') }} hora de Caracas
+                            {{ $partido->fechaCaracas()->format('d/m/Y g:i A') }} hora de Caracas
                             @if ($partido->estadio)
                                 · {{ $partido->estadio }}
                             @endif

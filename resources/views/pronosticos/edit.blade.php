@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="mt-2 text-sm leading-6 text-[var(--app-muted)]">
-                            {{ $partido->fechaCaracas()->format('d/m/Y H:i') }} 
+                            {{ $partido->fechaCaracas()->format('d/m/Y g:i A') }}
                             @if ($partido->estadio)
                                 &middot; {{ $partido->estadio }}
                             @endif
