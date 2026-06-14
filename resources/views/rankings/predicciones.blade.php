@@ -58,6 +58,20 @@
                             <div class="mt-2 font-display text-3xl font-black leading-none text-[var(--app-text)]">
                                 {{ $prediccion->goles_local }} - {{ $prediccion->goles_visitante }}
                             </div>
+                            @if ($prediccion->puntos !== null)
+                                <div class="mt-2 text-[10px] font-black uppercase {{ $prediccion->puntos > 0 ? 'text-[var(--app-success)]' : 'text-[var(--app-danger)]' }}">
+                                    @if ($prediccion->puntos > 0)
+                                        Acert&oacute;
+                                    @else
+                                        No acert&oacute;
+                                    @endif
+                                </div>
+                                <div class="mt-2 rounded-lg bg-[var(--app-panel-soft)] px-2 py-1.5 text-xs font-black uppercase text-[var(--app-muted)]">
+                                    {{ $prediccion->puntos }} {{ $prediccion->puntos === 1 ? 'punto' : 'puntos' }}
+                                </div>
+                            @else
+                                <div class="mt-2 text-[10px] font-black uppercase text-[var(--app-muted)]">Pendiente de resultado</div>
+                            @endif
                         @else
                             <div class="mt-2 text-sm font-bold text-[var(--app-muted)]">Sin pron&oacute;stico</div>
                         @endif
