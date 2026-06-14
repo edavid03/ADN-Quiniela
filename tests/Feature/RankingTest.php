@@ -218,6 +218,52 @@ class RankingTest extends TestCase
             ->assertDontSee('No acert&oacute;', false);
     }
 
+    public function test_prediction_cards_show_the_official_match_result(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $closedMatch = $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+        $closedMatch->update([
+            'goles_local' => 4,
+            'goles_visitante' => 2,
+        ]);
+
+        Prediccion::create([
+            'usuario_id' => $participant->id,
+            'partido_id' => $closedMatch->id,
+            'goles_local' => 1,
+            'goles_visitante' => 0,
+            'acertado' => false,
+            'puntos' => 1,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Resultado final')
+            ->assertSee('4 - 2')
+            ->assertSee('Finalizado')
+            ->assertSee('1 - 0');
+    }
+
+    public function test_prediction_cards_show_when_the_official_result_is_pending(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Resultado final')
+            ->assertSee('-- - --')
+            ->assertSee('Pendiente');
+    }
+
     public function test_open_matches_and_their_predictions_are_not_visible(): void
     {
         Carbon::setTestNow('2026-06-07 12:00:00');

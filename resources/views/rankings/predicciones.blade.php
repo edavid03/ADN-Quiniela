@@ -29,7 +29,10 @@
 
         <div class="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:p-4 xl:grid-cols-3">
             @forelse ($partidos as $partido)
-                @php $prediccion = $predicciones->get($partido->id); @endphp
+                @php
+                    $prediccion = $predicciones->get($partido->id);
+                    $tieneResultado = $partido->goles_local !== null && $partido->goles_visitante !== null;
+                @endphp
 
                 <article class="grid gap-4 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] p-4">
                     <div>
@@ -52,29 +55,44 @@
                         </div>
                     </div>
 
-                    <div class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-3 py-3 text-center">
-                        <div class="text-[10px] font-black uppercase tracking-wide text-[var(--app-muted)]">Pron&oacute;stico</div>
-                        @if ($prediccion)
-                            <div class="mt-2 font-display text-3xl font-black leading-none text-[var(--app-text)]">
-                                {{ $prediccion->goles_local }} - {{ $prediccion->goles_visitante }}
-                            </div>
-                            @if ($prediccion->puntos !== null)
-                                <div class="mt-2 text-[10px] font-black uppercase {{ $prediccion->puntos > 0 ? 'text-[var(--app-success)]' : 'text-[var(--app-danger)]' }}">
-                                    @if ($prediccion->puntos > 0)
-                                        Acert&oacute;
-                                    @else
-                                        No acert&oacute;
-                                    @endif
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-2 py-3 text-center">
+                            <div class="text-[9px] font-black uppercase tracking-wide text-[var(--app-muted)]">Resultado final</div>
+                            @if ($tieneResultado)
+                                <div class="mt-2 font-display text-2xl font-black leading-none text-[var(--app-text)]">
+                                    {{ $partido->goles_local }} - {{ $partido->goles_visitante }}
                                 </div>
-                                <div class="mt-2 rounded-lg bg-[var(--app-panel-soft)] px-2 py-1.5 text-xs font-black uppercase text-[var(--app-muted)]">
-                                    {{ $prediccion->puntos }} {{ $prediccion->puntos === 1 ? 'punto' : 'puntos' }}
-                                </div>
+                                <div class="mt-2 text-[9px] font-black uppercase text-[var(--app-success)]">Finalizado</div>
                             @else
-                                <div class="mt-2 text-[10px] font-black uppercase text-[var(--app-muted)]">Pendiente de resultado</div>
+                                <div class="mt-2 font-display text-xl font-black leading-none text-[var(--app-muted)]">-- - --</div>
+                                <div class="mt-2 text-[9px] font-black uppercase text-[var(--app-secondary)]">Pendiente</div>
                             @endif
-                        @else
-                            <div class="mt-2 text-sm font-bold text-[var(--app-muted)]">Sin pron&oacute;stico</div>
-                        @endif
+                        </div>
+
+                        <div class="rounded-lg border border-[var(--app-border)] bg-[var(--app-panel)] px-2 py-3 text-center">
+                            <div class="text-[9px] font-black uppercase tracking-wide text-[var(--app-muted)]">Pron&oacute;stico</div>
+                            @if ($prediccion)
+                                <div class="mt-2 font-display text-2xl font-black leading-none text-[var(--app-text)]">
+                                    {{ $prediccion->goles_local }} - {{ $prediccion->goles_visitante }}
+                                </div>
+                                @if ($prediccion->puntos !== null)
+                                    <div class="mt-2 text-[9px] font-black uppercase {{ $prediccion->puntos > 0 ? 'text-[var(--app-success)]' : 'text-[var(--app-danger)]' }}">
+                                        @if ($prediccion->puntos > 0)
+                                            Acert&oacute;
+                                        @else
+                                            No acert&oacute;
+                                        @endif
+                                    </div>
+                                    <div class="mt-2 rounded-lg bg-[var(--app-panel-soft)] px-2 py-1.5 text-[10px] font-black uppercase text-[var(--app-muted)]">
+                                        {{ $prediccion->puntos }} {{ $prediccion->puntos === 1 ? 'punto' : 'puntos' }}
+                                    </div>
+                                @else
+                                    <div class="mt-2 text-[9px] font-black uppercase text-[var(--app-muted)]">Pendiente de resultado</div>
+                                @endif
+                            @else
+                                <div class="mt-2 text-xs font-bold leading-5 text-[var(--app-muted)]">Sin pron&oacute;stico</div>
+                            @endif
+                        </div>
                     </div>
                 </article>
             @empty
