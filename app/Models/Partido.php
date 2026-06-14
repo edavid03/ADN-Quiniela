@@ -64,6 +64,15 @@ class Partido extends Model
         );
     }
 
+    public function scopeCerradosParaPronosticos(Builder $query): Builder
+    {
+        return $query->where(
+            'fecha_utc',
+            '<=',
+            now()->utc()->addMinutes(self::MINUTOS_ANTICIPACION_PRONOSTICO)
+        );
+    }
+
 
     public function finalizarPartido(int $golesLocal, int $golesVisitante): void
     {   

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Partido;
+use App\Models\Prediccion;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -31,6 +33,27 @@ class RankingController extends Controller
 
         return view('rankings.index', [
             'rankings' => $rankings,
+        ]);
+    }
+
+    public function showPredicciones(User $user): View
+    {
+        abort_if($user->is_admin, 404);
+
+        $partidos = Partido::query()
+            ->with(['local', 'visitante'])
+            ->cerradosParaPronosticos()
+            ->orderBy('fecha_utc')
+            ->get();
+
+        return view('rankings.predicciones', [
+            'usuario' => $user,
+            'partidos' => $partidos,
+            'predicciones' => Prediccion::query()
+                ->where('usuario_id', $user->id)
+                ->whereIn('partido_id', $partidos->pluck('id'))
+                ->get()
+                ->keyBy('partido_id'),
         ]);
     }
 }

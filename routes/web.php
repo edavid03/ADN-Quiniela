@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index');
+    Route::get('/rankings/{user}/predicciones', [RankingController::class, 'showPredicciones'])->name('rankings.predicciones.show');
     Route::get('/resultados', [ResultadoController::class, 'index'])->name('resultados.index');
     Route::view('/reglas', 'reglas.index')->name('reglas.index');
 
