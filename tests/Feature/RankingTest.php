@@ -6,6 +6,7 @@ use App\Models\Equipo;
 use App\Models\Partido;
 use App\Models\Prediccion;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -92,18 +93,154 @@ class RankingTest extends TestCase
             ->assertDontSee('Administrador');
     }
 
+    public function test_ranking_links_to_each_users_predictions(): void
+    {
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create([
+            'name' => 'Participante',
+            'username' => 'participante',
+        ]);
+
+        $this->actingAs($viewer)
+            ->get('/rankings')
+            ->assertOk()
+            ->assertSee(route('rankings.predicciones.show', $participant), false)
+            ->assertSee('Ver predicciones de Participante');
+    }
+
+    public function test_guests_cannot_view_another_users_predictions(): void
+    {
+        $participant = User::factory()->create();
+
+        $this->get(route('rankings.predicciones.show', $participant))
+            ->assertRedirect('/login');
+    }
+
+    public function test_users_can_view_closed_matches_and_the_participants_predictions(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create([
+            'name' => 'Ana',
+            'username' => 'ana',
+        ]);
+        $closedMatch = $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+
+        Prediccion::create([
+            'usuario_id' => $participant->id,
+            'partido_id' => $closedMatch->id,
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Predicciones de Ana')
+            ->assertSee('@ana')
+            ->assertSee('Local 1 FC')
+            ->assertSee('2 - 1');
+    }
+
+    public function test_users_can_view_their_own_predictions_profile(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Perfil propio',
+            'username' => 'perfil_propio',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('rankings.predicciones.show', $user))
+            ->assertOk()
+            ->assertSee('Predicciones de Perfil propio')
+            ->assertSee('@perfil_propio');
+    }
+
+    public function test_open_matches_and_their_predictions_are_not_visible(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $openMatch = $this->crearPartidoConFecha(now()->utc()->addMinutes(61));
+
+        Prediccion::create([
+            'usuario_id' => $participant->id,
+            'partido_id' => $openMatch->id,
+            'goles_local' => 7,
+            'goles_visitante' => 6,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertDontSee('Local 1 FC')
+            ->assertDontSee('7 - 6')
+            ->assertSee('Todav&iacute;a no hay partidos cerrados para mostrar.', false);
+    }
+
+    public function test_match_becomes_visible_exactly_at_the_sixty_minute_deadline(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $matchAtDeadline = $this->crearPartidoConFecha(now()->utc()->addMinutes(60));
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Local 1 FC')
+            ->assertSee('Sin pron&oacute;stico', false);
+    }
+
+    public function test_all_closed_matches_are_visible_when_participant_did_not_predict(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $this->crearPartidoConFecha(now()->utc()->addMinutes(20));
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Local 1 FC')
+            ->assertSee('Sin pron&oacute;stico', false);
+    }
+
+    public function test_admin_predictions_profile_returns_not_found(): void
+    {
+        $viewer = User::factory()->create();
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $admin))
+            ->assertNotFound();
+    }
+
     private function crearPartido(): Partido
+    {
+        return $this->crearPartidoConFecha(now()->utc()->addWeeks(3));
+    }
+
+    private function crearPartidoConFecha($fechaUtc): Partido
     {
         $local = Equipo::create([
             'id' => 1,
-            'name' => 'Local FC',
+            'name' => 'Local 1 FC',
             'code' => 'LOC',
             'grupo' => 'A',
         ]);
 
         $visitante = Equipo::create([
             'id' => 2,
-            'name' => 'Visitante FC',
+            'name' => 'Visitante 2 FC',
             'code' => 'VIS',
             'grupo' => 'A',
         ]);
@@ -111,7 +248,7 @@ class RankingTest extends TestCase
         return Partido::create([
             'local_id' => $local->id,
             'visitante_id' => $visitante->id,
-            'fecha_utc' => now()->utc()->addWeeks(3)->format('Y-m-d H:i:s'),
+            'fecha_utc' => $fechaUtc->format('Y-m-d H:i:s'),
             'estadio' => 'Estadio de Prueba',
             'fase' => 'Grupos',
             'goles_local' => null,

@@ -28,8 +28,14 @@
                     <span class="grid h-9 w-9 place-items-center rounded-lg bg-[var(--app-primary)] font-extrabold text-white dark:text-[var(--app-bg)]">{{ $index + 1 }}</span>
                 </div>
                 <div class="min-w-0">
-                    <strong class="block truncate">{{ $ranking->name }}</strong>
-                    <span class="block truncate text-sm text-[var(--app-muted)]">{{ '@'.$ranking->username }}</span>
+                    <a
+                        href="{{ route('rankings.predicciones.show', $ranking->id) }}"
+                        class="group block w-fit max-w-full rounded-sm no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--app-primary)]"
+                        aria-label="Ver predicciones de {{ $ranking->name }}"
+                    >
+                        <strong class="block truncate text-[var(--app-text)] transition-colors group-hover:text-[var(--app-primary)]">{{ $ranking->name }}</strong>
+                        <span class="block truncate text-sm text-[var(--app-muted)] transition-colors group-hover:text-[var(--app-primary)]">{{ '@'.$ranking->username }}</span>
+                    </a>
                     <span class="mt-2 flex flex-wrap gap-1.5 text-[.65rem] font-extrabold uppercase text-[var(--app-muted)] lg:hidden">
                         <span class="rounded bg-[var(--app-panel-soft)] px-2 py-1">{{ (int) $ranking->exactos }} exactos</span>
                         <span class="rounded bg-[var(--app-panel-soft)] px-2 py-1">{{ (int) $ranking->pronosticos }} jugados</span>
