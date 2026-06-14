@@ -159,6 +159,65 @@ class RankingTest extends TestCase
             ->assertSee('@perfil_propio');
     }
 
+    public function test_evaluated_predictions_show_if_the_user_scored_and_the_points_won(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $scoredMatch = $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+        $missedMatch = $this->crearPartidoConFecha(now()->utc()->addMinutes(20), 3, 4);
+
+        Prediccion::create([
+            'usuario_id' => $participant->id,
+            'partido_id' => $scoredMatch->id,
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+            'acertado' => false,
+            'puntos' => 1,
+        ]);
+        Prediccion::create([
+            'usuario_id' => $participant->id,
+            'partido_id' => $missedMatch->id,
+            'goles_local' => 0,
+            'goles_visitante' => 0,
+            'acertado' => false,
+            'puntos' => 0,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Acert&oacute;', false)
+            ->assertSee('1 punto')
+            ->assertSee('No acert&oacute;', false)
+            ->assertSee('0 puntos');
+    }
+
+    public function test_unevaluated_prediction_shows_pending_result(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $closedMatch = $this->crearPartidoConFecha(now()->utc()->addMinutes(30));
+
+        Prediccion::create([
+            'usuario_id' => $participant->id,
+            'partido_id' => $closedMatch->id,
+            'goles_local' => 1,
+            'goles_visitante' => 1,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSee('Pendiente de resultado')
+            ->assertDontSee('No acert&oacute;', false);
+    }
+
     public function test_open_matches_and_their_predictions_are_not_visible(): void
     {
         Carbon::setTestNow('2026-06-07 12:00:00');
@@ -229,18 +288,18 @@ class RankingTest extends TestCase
         return $this->crearPartidoConFecha(now()->utc()->addWeeks(3));
     }
 
-    private function crearPartidoConFecha($fechaUtc): Partido
+    private function crearPartidoConFecha($fechaUtc, int $localId = 1, int $visitanteId = 2): Partido
     {
         $local = Equipo::create([
-            'id' => 1,
-            'name' => 'Local 1 FC',
+            'id' => $localId,
+            'name' => "Local {$localId} FC",
             'code' => 'LOC',
             'grupo' => 'A',
         ]);
 
         $visitante = Equipo::create([
-            'id' => 2,
-            'name' => 'Visitante 2 FC',
+            'id' => $visitanteId,
+            'name' => "Visitante {$visitanteId} FC",
             'code' => 'VIS',
             'grupo' => 'A',
         ]);
