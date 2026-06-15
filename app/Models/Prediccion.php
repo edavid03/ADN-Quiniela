@@ -49,19 +49,26 @@ class Prediccion extends Model
             return 'El plazo para registrar apuestas ha cerrado.';
         }
 
-        return self::updateOrCreate(
-            [
-                'partido_id' => $partidoId,
-                'usuario_id' => $usuarioId,
-            ],
-            [
-                'goles_local' => $golesLocal,
-                'goles_visitante' => $golesVisitante,
-                'puntos' => null, 
-                'acertado' => false
-            ]
-        );
+        $prediccion = self::firstOrNew([
+            'partido_id' => $partidoId,
+            'usuario_id' => $usuarioId,
+        ]);
 
+        $prediccion->fill([
+            'goles_local' => $golesLocal,
+            'goles_visitante' => $golesVisitante,
+        ]);
+
+        if ($prediccion->exists && ! $prediccion->isDirty(['goles_local', 'goles_visitante'])) {
+            return $prediccion;
+        }
+
+        $prediccion->fill([
+            'puntos' => null,
+            'acertado' => false,
+        ])->save();
+
+        return $prediccion;
     }
 
         public function evaluarResultado(
