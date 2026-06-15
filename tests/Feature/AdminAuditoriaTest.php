@@ -139,6 +139,56 @@ class AdminAuditoriaTest extends TestCase
         $this->assertSame(['acertado' => true, 'puntos' => 3], $predictionAudit->new_values);
     }
 
+    public function test_result_recalculation_only_audits_real_prediction_changes_for_the_updated_match(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+        $partidoActualizado = $this->crearPartido();
+        $otroPartido = $this->crearPartido(3, 4);
+
+        $prediccionEvaluada = Prediccion::create([
+            'usuario_id' => $user->id,
+            'partido_id' => $partidoActualizado->id,
+            'goles_local' => 0,
+            'goles_visitante' => 0,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+        $prediccionOtroPartido = Prediccion::create([
+            'usuario_id' => $user->id,
+            'partido_id' => $otroPartido->id,
+            'goles_local' => 0,
+            'goles_visitante' => 0,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $partidoActualizado->id => ['goles_local' => 2, 'goles_visitante' => 1],
+                    $otroPartido->id => ['goles_local' => null, 'goles_visitante' => null],
+                ],
+            ])
+            ->assertRedirect('/admin/resultados');
+
+        $auditoriasPredicciones = Auditoria::query()
+            ->where('actor_id', $admin->id)
+            ->where('table_name', 'predicciones')
+            ->where('action', 'updated')
+            ->get();
+
+        $this->assertCount(1, $auditoriasPredicciones);
+        $this->assertSame((string) $prediccionEvaluada->id, $auditoriasPredicciones->sole()->record_id);
+        $this->assertSame(['puntos' => null], $auditoriasPredicciones->sole()->old_values);
+        $this->assertSame(['puntos' => 0], $auditoriasPredicciones->sole()->new_values);
+        $this->assertDatabaseHas('predicciones', [
+            'id' => $prediccionOtroPartido->id,
+            'puntos' => null,
+            'acertado' => false,
+        ]);
+    }
+
     public function test_rolled_back_transaction_does_not_leave_audit_records(): void
     {
         try {

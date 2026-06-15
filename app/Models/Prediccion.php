@@ -14,6 +14,14 @@ class Prediccion extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = ['id', 'partido_id', 'usuario_id', 'goles_local', 'goles_visitante', 'acertado', 'puntos'];
+    protected $casts = [
+        'partido_id' => 'integer',
+        'usuario_id' => 'integer',
+        'goles_local' => 'integer',
+        'goles_visitante' => 'integer',
+        'acertado' => 'boolean',
+        'puntos' => 'integer',
+    ];
 
     public function partido()
     {
@@ -95,12 +103,14 @@ class Prediccion extends Model
 
         }
 
-        $this->update([
+        $this->fill([
             'puntos' => $puntosObtenidos,
-            'acertado' => $marcadorAcertado
+            'acertado' => $marcadorAcertado,
         ]);
 
- 
+        if ($this->isDirty(['puntos', 'acertado'])) {
+            $this->save();
+        }
     }
 
 
