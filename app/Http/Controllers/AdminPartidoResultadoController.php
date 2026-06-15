@@ -65,8 +65,27 @@ class AdminPartidoResultadoController extends Controller
             ];
         }
 
-        DB::transaction(function () use ($resultadosCompletos, $partidos): void {
-            foreach ($resultadosCompletos as $partidoId => $resultado) {
+        $resultadosModificados = array_filter(
+            $resultadosCompletos,
+            function (array $resultado, int|string $partidoId) use ($partidos): bool {
+                $partido = $partidos->get((int) $partidoId);
+
+                return $partido->goles_local === null
+                    || $partido->goles_visitante === null
+                    || (int) $partido->goles_local !== $resultado['goles_local']
+                    || (int) $partido->goles_visitante !== $resultado['goles_visitante'];
+            },
+            ARRAY_FILTER_USE_BOTH,
+        );
+
+        if ($resultadosModificados === []) {
+            return redirect()
+                ->route('admin.resultados.edit')
+                ->with('status', 'No se realizaron cambios.');
+        }
+
+        DB::transaction(function () use ($resultadosModificados, $partidos): void {
+            foreach ($resultadosModificados as $partidoId => $resultado) {
                 $partidos->get((int) $partidoId)->finalizarPartido(
                     $resultado['goles_local'],
                     $resultado['goles_visitante'],

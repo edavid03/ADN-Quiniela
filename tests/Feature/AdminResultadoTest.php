@@ -86,7 +86,8 @@ class AdminResultadoTest extends TestCase
                     ],
                 ],
             ])
-            ->assertRedirect('/admin/resultados');
+            ->assertRedirect('/admin/resultados')
+            ->assertSessionHas('status', 'Resultados guardados correctamente.');
 
         $this->assertDatabaseHas('partidos', [
             'id' => $partido->id,
@@ -99,6 +100,30 @@ class AdminResultadoTest extends TestCase
             'partido_id' => $partido->id,
             'acertado' => true,
             'puntos' => 3,
+        ]);
+    }
+
+    public function test_new_zero_zero_result_is_saved(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $partido = $this->crearPartido();
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $partido->id => [
+                        'goles_local' => 0,
+                        'goles_visitante' => 0,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/admin/resultados')
+            ->assertSessionHas('status', 'Resultados guardados correctamente.');
+
+        $this->assertDatabaseHas('partidos', [
+            'id' => $partido->id,
+            'goles_local' => 0,
+            'goles_visitante' => 0,
         ]);
     }
 
@@ -129,7 +154,8 @@ class AdminResultadoTest extends TestCase
                     ],
                 ],
             ])
-            ->assertRedirect('/admin/resultados');
+            ->assertRedirect('/admin/resultados')
+            ->assertSessionHas('status', 'No se realizaron cambios.');
 
         $this->assertDatabaseHas('predicciones', [
             'id' => $prediccion->id,
@@ -146,6 +172,39 @@ class AdminResultadoTest extends TestCase
             'actor_id' => $admin->id,
             'table_name' => 'predicciones',
             'record_id' => (string) $prediccion->id,
+            'action' => 'updated',
+        ]);
+    }
+
+    public function test_admin_batch_only_processes_results_that_changed(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $sinCambios = $this->crearPartido();
+        $modificado = $this->crearPartido(3, 4);
+
+        $sinCambios->update(['goles_local' => 2, 'goles_visitante' => 1]);
+        $modificado->update(['goles_local' => 0, 'goles_visitante' => 0]);
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $sinCambios->id => ['goles_local' => 2, 'goles_visitante' => 1],
+                    $modificado->id => ['goles_local' => 1, 'goles_visitante' => 0],
+                ],
+            ])
+            ->assertRedirect('/admin/resultados')
+            ->assertSessionHas('status', 'Resultados guardados correctamente.');
+
+        $this->assertDatabaseMissing('auditorias', [
+            'actor_id' => $admin->id,
+            'table_name' => 'partidos',
+            'record_id' => (string) $sinCambios->id,
+            'action' => 'updated',
+        ]);
+        $this->assertDatabaseHas('auditorias', [
+            'actor_id' => $admin->id,
+            'table_name' => 'partidos',
+            'record_id' => (string) $modificado->id,
             'action' => 'updated',
         ]);
     }
