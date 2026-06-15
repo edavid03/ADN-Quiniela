@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="mt-3 text-center text-[11px] font-semibold leading-5 text-[var(--app-muted)]">
-                            {{ $partido->fechaCaracas()->format('d/m/Y g:i A') }} hora de Caracas
+                            {{ $partido->fechaCaracas()->format('d/m/Y g:i A') }}
                             @if ($partido->estadio)
                                 <br>{{ $partido->estadio }}
                             @endif

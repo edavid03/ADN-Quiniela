@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class Prediccion extends Model
 {
+    use Auditable;
+
     protected $table = 'predicciones';
     protected $primaryKey = 'id';
     public $timestamps = false;

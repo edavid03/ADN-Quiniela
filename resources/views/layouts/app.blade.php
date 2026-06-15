@@ -46,6 +46,7 @@
                         @if (auth()->user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.dashboard', 'admin.resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
                             <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.usuarios.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Usuarios</a>
+                            <a href="{{ route('admin.auditoria.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.auditoria.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Auditor&iacute;a</a>
                         @endif
                     </nav>
 

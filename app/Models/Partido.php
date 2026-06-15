@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Partido extends Model
 {
+    use Auditable;
+
     public const MINUTOS_ANTICIPACION_PRONOSTICO = 60;
 
     protected $table = 'partidos';

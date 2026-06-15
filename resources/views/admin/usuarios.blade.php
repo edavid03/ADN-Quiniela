@@ -10,6 +10,7 @@
             <p class="page-copy">Acepta solicitudes, crea accesos manuales y elimina cuentas que todav&iacute;a no tengan pron&oacute;sticos.</p>
         </div>
         <div class="page-actions">
+            <a href="{{ route('admin.auditoria.index') }}" class="btn btn-secondary">Ver auditor&iacute;a</a>
             <a href="{{ route('admin.resultados.edit') }}" class="btn btn-secondary">Gestionar resultados</a>
             <a href="{{ route('dashboard') }}" class="btn btn-secondary">Volver</a>
         </div>
