@@ -101,6 +101,82 @@ class PronosticoTest extends TestCase
         ]);
     }
 
+    public function test_existing_pronostico_is_not_updated_when_scores_have_not_changed(): void
+    {
+        $user = User::factory()->create();
+        $partido = $this->crearPartido();
+        $prediccion = Prediccion::create([
+            'usuario_id' => $user->id,
+            'partido_id' => $partido->id,
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+            'acertado' => true,
+            'puntos' => 3,
+        ]);
+
+        $this->actingAs($user)
+            ->post('/pronosticos', [
+                'predicciones' => [
+                    $partido->id => [
+                        'goles_local' => 2,
+                        'goles_visitante' => 1,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/pronosticos');
+
+        $this->assertDatabaseHas('predicciones', [
+            'id' => $prediccion->id,
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+            'acertado' => true,
+            'puntos' => 3,
+        ]);
+        $this->assertDatabaseMissing('auditorias', [
+            'table_name' => 'predicciones',
+            'record_id' => (string) $prediccion->id,
+            'action' => 'updated',
+        ]);
+    }
+
+    public function test_existing_pronostico_is_updated_when_scores_have_changed(): void
+    {
+        $user = User::factory()->create();
+        $partido = $this->crearPartido();
+        $prediccion = Prediccion::create([
+            'usuario_id' => $user->id,
+            'partido_id' => $partido->id,
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+            'acertado' => true,
+            'puntos' => 3,
+        ]);
+
+        $this->actingAs($user)
+            ->post('/pronosticos', [
+                'predicciones' => [
+                    $partido->id => [
+                        'goles_local' => 0,
+                        'goles_visitante' => 0,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/pronosticos');
+
+        $this->assertDatabaseHas('predicciones', [
+            'id' => $prediccion->id,
+            'goles_local' => 0,
+            'goles_visitante' => 0,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+        $this->assertDatabaseHas('auditorias', [
+            'table_name' => 'predicciones',
+            'record_id' => (string) $prediccion->id,
+            'action' => 'updated',
+        ]);
+    }
+
     public function test_pronosticos_at_sixty_minute_deadline_are_rejected(): void
     {
         Carbon::setTestNow('2026-06-07 12:00:00');
