@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Auditoria;
 use App\Models\Equipo;
 use App\Models\Partido;
 use App\Models\Prediccion;
@@ -194,6 +195,37 @@ class AdminResultadoTest extends TestCase
             'record_id' => (string) $partido->id,
             'action' => 'updated',
         ]);
+    }
+
+    public function test_only_changed_result_fields_are_updated(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $partido = $this->crearPartido();
+        $partido->update([
+            'goles_local' => 1,
+            'goles_visitante' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $partido->id => [
+                        'goles_local' => 2,
+                        'goles_visitante' => 0,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/admin/resultados');
+
+        $auditoria = Auditoria::query()
+            ->where('actor_id', $admin->id)
+            ->where('table_name', 'partidos')
+            ->where('record_id', (string) $partido->id)
+            ->where('action', 'updated')
+            ->sole();
+
+        $this->assertSame(['goles_local' => 1], $auditoria->old_values);
+        $this->assertSame(['goles_local' => 2], $auditoria->new_values);
     }
 
     public function test_incomplete_admin_result_shows_security_alert(): void

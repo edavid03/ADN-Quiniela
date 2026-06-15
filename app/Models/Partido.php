@@ -79,15 +79,21 @@ class Partido extends Model
 
     public function finalizarPartido(int $golesLocal, int $golesVisitante): void
     {
-        $this->fill([
-            'goles_local' => $golesLocal,
-            'goles_visitante' => $golesVisitante
-        ]);
+        $cambios = [];
 
-        if (! $this->isDirty(['goles_local', 'goles_visitante'])) {
+        if ($this->goles_local === null || (int) $this->goles_local !== $golesLocal) {
+            $cambios['goles_local'] = $golesLocal;
+        }
+
+        if ($this->goles_visitante === null || (int) $this->goles_visitante !== $golesVisitante) {
+            $cambios['goles_visitante'] = $golesVisitante;
+        }
+
+        if ($cambios === []) {
             return;
         }
 
+        $this->fill($cambios);
         $this->save();
 
         $signoReal = ($golesLocal > $golesVisitante) ? 1 : (($golesLocal < $golesVisitante) ? 2 : 0);
