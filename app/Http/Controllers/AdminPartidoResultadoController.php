@@ -65,36 +65,44 @@ class AdminPartidoResultadoController extends Controller
             ];
         }
 
-        $resultadosModificados = array_filter(
-            $resultadosCompletos,
-            function (array $resultado, int|string $partidoId) use ($partidos): bool {
-                $partido = $partidos->get((int) $partidoId);
+        $resultadosActualizados = DB::transaction(function () use ($resultadosCompletos): int {
+            $partidosBloqueados = Partido::query()
+                ->whereIn('id', array_map('intval', array_keys($resultadosCompletos)))
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+            $actualizados = 0;
 
-                return $partido->goles_local === null
-                    || $partido->goles_visitante === null
-                    || (int) $partido->goles_local !== $resultado['goles_local']
-                    || (int) $partido->goles_visitante !== $resultado['goles_visitante'];
-            },
-            ARRAY_FILTER_USE_BOTH,
-        );
+            foreach ($resultadosCompletos as $partidoId => $resultado) {
+                $partido = $partidosBloqueados->get((int) $partidoId);
 
-        if ($resultadosModificados === []) {
+                if (
+                    $partido->goles_local !== null
+                    && $partido->goles_visitante !== null
+                    && (int) $partido->goles_local === $resultado['goles_local']
+                    && (int) $partido->goles_visitante === $resultado['goles_visitante']
+                ) {
+                    continue;
+                }
+
+                $partido->finalizarPartido(
+                    $resultado['goles_local'],
+                    $resultado['goles_visitante'],
+                );
+                $actualizados++;
+            }
+
+            return $actualizados;
+        });
+
+        if ($resultadosActualizados === 0) {
             return redirect()
                 ->route('admin.resultados.edit')
                 ->with('status', 'No se realizaron cambios.');
         }
 
-        DB::transaction(function () use ($resultadosModificados, $partidos): void {
-            foreach ($resultadosModificados as $partidoId => $resultado) {
-                $partidos->get((int) $partidoId)->finalizarPartido(
-                    $resultado['goles_local'],
-                    $resultado['goles_visitante'],
-                );
-            }
-        });
-
         return redirect()
             ->route('admin.resultados.edit')
-            ->with('status', 'Resultados guardados correctamente.');
+            ->with('status', "Resultados guardados correctamente. Partidos actualizados: {$resultadosActualizados}.");
     }
 }

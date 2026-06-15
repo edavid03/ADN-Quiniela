@@ -87,7 +87,7 @@ class AdminResultadoTest extends TestCase
                 ],
             ])
             ->assertRedirect('/admin/resultados')
-            ->assertSessionHas('status', 'Resultados guardados correctamente.');
+            ->assertSessionHas('status', 'Resultados guardados correctamente. Partidos actualizados: 1.');
 
         $this->assertDatabaseHas('partidos', [
             'id' => $partido->id,
@@ -118,7 +118,7 @@ class AdminResultadoTest extends TestCase
                 ],
             ])
             ->assertRedirect('/admin/resultados')
-            ->assertSessionHas('status', 'Resultados guardados correctamente.');
+            ->assertSessionHas('status', 'Resultados guardados correctamente. Partidos actualizados: 1.');
 
         $this->assertDatabaseHas('partidos', [
             'id' => $partido->id,
@@ -181,32 +181,31 @@ class AdminResultadoTest extends TestCase
         $admin = User::factory()->create(['is_admin' => true]);
         $sinCambios = $this->crearPartido();
         $modificado = $this->crearPartido(3, 4);
+        $otroSinCambios = $this->crearPartido(5, 6);
 
         $sinCambios->update(['goles_local' => 2, 'goles_visitante' => 1]);
         $modificado->update(['goles_local' => 0, 'goles_visitante' => 0]);
+        $otroSinCambios->update(['goles_local' => 3, 'goles_visitante' => 2]);
 
         $this->actingAs($admin)
             ->post('/admin/resultados', [
                 'resultados' => [
                     $sinCambios->id => ['goles_local' => 2, 'goles_visitante' => 1],
                     $modificado->id => ['goles_local' => 1, 'goles_visitante' => 0],
+                    $otroSinCambios->id => ['goles_local' => 3, 'goles_visitante' => 2],
                 ],
             ])
             ->assertRedirect('/admin/resultados')
-            ->assertSessionHas('status', 'Resultados guardados correctamente.');
+            ->assertSessionHas('status', 'Resultados guardados correctamente. Partidos actualizados: 1.');
 
-        $this->assertDatabaseMissing('auditorias', [
-            'actor_id' => $admin->id,
-            'table_name' => 'partidos',
-            'record_id' => (string) $sinCambios->id,
-            'action' => 'updated',
-        ]);
-        $this->assertDatabaseHas('auditorias', [
-            'actor_id' => $admin->id,
-            'table_name' => 'partidos',
-            'record_id' => (string) $modificado->id,
-            'action' => 'updated',
-        ]);
+        $auditoriasPartidos = Auditoria::query()
+            ->where('actor_id', $admin->id)
+            ->where('table_name', 'partidos')
+            ->where('action', 'updated')
+            ->get();
+
+        $this->assertCount(1, $auditoriasPartidos);
+        $this->assertSame((string) $modificado->id, $auditoriasPartidos->sole()->record_id);
     }
 
     public function test_existing_result_is_updated_and_predictions_are_recalculated_when_scores_change(): void
