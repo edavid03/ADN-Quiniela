@@ -101,6 +101,101 @@ class AdminResultadoTest extends TestCase
         ]);
     }
 
+    public function test_existing_result_is_not_updated_or_recalculated_when_scores_have_not_changed(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+        $partido = $this->crearPartido();
+        $partido->update([
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+        ]);
+        $prediccion = Prediccion::create([
+            'usuario_id' => $user->id,
+            'partido_id' => $partido->id,
+            'goles_local' => 2,
+            'goles_visitante' => 1,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $partido->id => [
+                        'goles_local' => 2,
+                        'goles_visitante' => 1,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/admin/resultados');
+
+        $this->assertDatabaseHas('predicciones', [
+            'id' => $prediccion->id,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+        $this->assertDatabaseMissing('auditorias', [
+            'actor_id' => $admin->id,
+            'table_name' => 'partidos',
+            'record_id' => (string) $partido->id,
+            'action' => 'updated',
+        ]);
+        $this->assertDatabaseMissing('auditorias', [
+            'actor_id' => $admin->id,
+            'table_name' => 'predicciones',
+            'record_id' => (string) $prediccion->id,
+            'action' => 'updated',
+        ]);
+    }
+
+    public function test_existing_result_is_updated_and_predictions_are_recalculated_when_scores_change(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+        $partido = $this->crearPartido();
+        $partido->update([
+            'goles_local' => 1,
+            'goles_visitante' => 0,
+        ]);
+        $prediccion = Prediccion::create([
+            'usuario_id' => $user->id,
+            'partido_id' => $partido->id,
+            'goles_local' => 2,
+            'goles_visitante' => 2,
+            'acertado' => false,
+            'puntos' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->post('/admin/resultados', [
+                'resultados' => [
+                    $partido->id => [
+                        'goles_local' => 2,
+                        'goles_visitante' => 2,
+                    ],
+                ],
+            ])
+            ->assertRedirect('/admin/resultados');
+
+        $this->assertDatabaseHas('partidos', [
+            'id' => $partido->id,
+            'goles_local' => 2,
+            'goles_visitante' => 2,
+        ]);
+        $this->assertDatabaseHas('predicciones', [
+            'id' => $prediccion->id,
+            'acertado' => true,
+            'puntos' => 3,
+        ]);
+        $this->assertDatabaseHas('auditorias', [
+            'actor_id' => $admin->id,
+            'table_name' => 'partidos',
+            'record_id' => (string) $partido->id,
+            'action' => 'updated',
+        ]);
+    }
+
     public function test_incomplete_admin_result_shows_security_alert(): void
     {
         $admin = User::factory()->create([

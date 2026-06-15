@@ -78,20 +78,23 @@ class Partido extends Model
 
 
     public function finalizarPartido(int $golesLocal, int $golesVisitante): void
-    {   
-        $this->update([
+    {
+        $this->fill([
             'goles_local' => $golesLocal,
             'goles_visitante' => $golesVisitante
         ]);
+
+        if (! $this->isDirty(['goles_local', 'goles_visitante'])) {
+            return;
+        }
+
+        $this->save();
 
         $signoReal = ($golesLocal > $golesVisitante) ? 1 : (($golesLocal < $golesVisitante) ? 2 : 0);
 
         $this->predicciones()->get()->each(function (Prediccion $prediccion) use ($golesLocal, $golesVisitante, $signoReal) {
             $prediccion->evaluarResultado($golesLocal, $golesVisitante, $signoReal);
         });
-
-
-
     }
 
 
