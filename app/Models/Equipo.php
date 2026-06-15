@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class Equipo extends Model
 {
+    use Auditable;
+
     protected $table = 'equipos';
     protected $primaryKey = 'id';
     public $timestamps = false;

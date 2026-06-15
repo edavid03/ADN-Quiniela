@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminAuditoriaController;
 use App\Http\Controllers\AdminPartidoResultadoController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('admin')->group(function () {
+        Route::get('/admin/auditoria', [AdminAuditoriaController::class, 'index'])->name('admin.auditoria.index');
         Route::get('/admin/dashboard', [AdminPartidoResultadoController::class, 'edit'])->name('admin.dashboard');
         Route::get('/admin/resultados', [AdminPartidoResultadoController::class, 'edit'])->name('admin.resultados.edit');
         Route::post('/admin/resultados', [AdminPartidoResultadoController::class, 'update'])->name('admin.resultados.update');
