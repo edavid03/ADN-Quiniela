@@ -16,6 +16,11 @@
             request('table_name') ? 'Tabla' : null,
         ])->filter()->count();
 
+        $selectedActorNames = $actors
+            ->filter(fn ($actor) => $selectedActorIds->contains((int) $actor->actor_id))
+            ->pluck('actor_name')
+            ->values();
+
         $formatAuditValue = function ($value) {
             if ($value === null || $value === '') {
                 return 'Sin valor';
@@ -64,21 +69,67 @@
                     <small>{{ $selectedActorIds->isNotEmpty() ? $selectedActorIds->count().' seleccionados' : 'Todos' }}</small>
                 </legend>
 
-                <div class="audit-user-picker">
-                    @foreach ($actors as $actor)
-                        <label>
-                            <input type="checkbox" name="actor_ids[]" value="{{ $actor->actor_id }}" @checked($selectedActorIds->contains((int) $actor->actor_id))>
-                            <span>
-                                <strong>{{ $actor->actor_name }}</strong>
-                                @if ($actor->is_admin)
-                                    <small>Admin</small>
+                <div class="audit-user-select">
+                    <button type="button" class="audit-user-select-button" data-audit-user-modal-open aria-haspopup="dialog" aria-controls="audit-user-modal">
+                        <span>
+                            <strong>{{ $selectedActorIds->isNotEmpty() ? $selectedActorIds->count().' usuarios elegidos' : 'Todos los usuarios' }}</strong>
+                            <small>
+                                @if ($selectedActorNames->isNotEmpty())
+                                    {{ $selectedActorNames->take(3)->join(', ') }}{{ $selectedActorNames->count() > 3 ? ' +' . ($selectedActorNames->count() - 3) : '' }}
                                 @else
-                                    <small>Usuario</small>
+                                    Sin filtro por usuario
                                 @endif
-                            </span>
-                        </label>
-                    @endforeach
+                            </small>
+                        </span>
+                        <span aria-hidden="true">Editar</span>
+                    </button>
                 </div>
+
+                <dialog id="audit-user-modal" class="audit-user-modal" data-audit-user-modal aria-labelledby="audit-user-modal-title">
+                    <div class="audit-user-modal-panel">
+                        <header class="audit-user-modal-head">
+                            <div>
+                                <span>Filtro de usuarios</span>
+                                <h2 id="audit-user-modal-title">Elige que usuarios quieres ver</h2>
+                            </div>
+                            <button type="button" class="audit-modal-close" data-audit-user-modal-close aria-label="Cerrar selector">Cerrar</button>
+                        </header>
+
+                        <div class="audit-user-modal-tools">
+                            <label>
+                                <span>Buscar usuario</span>
+                                <input type="search" placeholder="Nombre, usuario o rol" data-audit-user-search>
+                            </label>
+                            <div>
+                                <button type="button" class="btn btn-secondary" data-audit-user-check-all>Todos</button>
+                                <button type="button" class="btn btn-secondary" data-audit-user-clear>Limpiar</button>
+                            </div>
+                        </div>
+
+                        <div class="audit-user-picker" data-audit-user-list>
+                            @forelse ($actors as $actor)
+                                <label data-audit-user-option data-audit-user-name="{{ \Illuminate\Support\Str::lower($actor->actor_name.' '.($actor->is_admin ? 'admin' : 'usuario')) }}">
+                                    <input type="checkbox" name="actor_ids[]" value="{{ $actor->actor_id }}" @checked($selectedActorIds->contains((int) $actor->actor_id))>
+                                    <span>
+                                        <strong>{{ $actor->actor_name }}</strong>
+                                        @if ($actor->is_admin)
+                                            <small>Admin</small>
+                                        @else
+                                            <small>Usuario</small>
+                                        @endif
+                                    </span>
+                                </label>
+                            @empty
+                                <p class="audit-user-picker-empty">No hay usuarios con eventos registrados.</p>
+                            @endforelse
+                        </div>
+
+                        <footer class="audit-user-modal-actions">
+                            <button type="button" class="btn btn-secondary" data-audit-user-modal-close>Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+                        </footer>
+                    </div>
+                </dialog>
             </fieldset>
 
             <label>
@@ -162,8 +213,8 @@
                             @foreach ($changedFields as $field)
                                 <div class="audit-change-row">
                                     <strong>{{ $field }}</strong>
-                                    <span>{{ $formatAuditValue($oldValues[$field] ?? null) }}</span>
-                                    <span>{{ $formatAuditValue($newValues[$field] ?? null) }}</span>
+                                    <span data-label="Antes">{{ $formatAuditValue($oldValues[$field] ?? null) }}</span>
+                                    <span data-label="Despues">{{ $formatAuditValue($newValues[$field] ?? null) }}</span>
                                 </div>
                             @endforeach
                         @else

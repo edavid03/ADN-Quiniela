@@ -1920,29 +1920,182 @@
         font-weight: 900;
     }
 
-    .audit-user-picker {
-        display: flex;
-        gap: .45rem;
-        max-height: none;
-        overflow-x: auto;
-        border: 1px solid var(--app-border);
-        border-radius: .5rem;
-        background: var(--app-panel);
-        padding: .45rem;
+    .audit-user-select {
+        min-width: 0;
     }
 
-    .audit-user-picker label {
-        display: inline-grid;
-        grid-template-columns: auto minmax(7rem, 1fr);
-        gap: .45rem;
+    .audit-user-select-button {
+        display: grid;
+        width: 100%;
+        min-height: 3.3rem;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        min-height: 2.45rem;
+        gap: .75rem;
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel);
+        padding: .65rem .8rem;
+        color: var(--app-text);
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .audit-user-select-button:focus-visible,
+    .audit-modal-close:focus-visible,
+    .audit-user-modal-tools input:focus {
+        outline: none;
+        border-color: var(--app-accent-2);
+        box-shadow: 0 0 0 4px var(--app-ring);
+    }
+
+    .audit-user-select-button strong,
+    .audit-user-select-button small {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .audit-user-select-button strong {
+        font-family: var(--font-display);
+        font-size: .85rem;
+        font-weight: 900;
+    }
+
+    .audit-user-select-button small {
+        margin-top: .15rem;
+        color: var(--app-muted);
+        font-size: .68rem;
+        font-weight: 750;
+    }
+
+    .audit-user-select-button > span:last-child {
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--app-secondary) 12%, var(--app-panel-strong));
+        padding: .35rem .55rem;
+        color: var(--app-secondary);
+        font-size: .62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .audit-user-modal {
+        width: min(43rem, calc(100% - 1.5rem));
+        max-height: min(42rem, calc(100dvh - 2rem));
+        border: 0;
+        border-radius: .65rem;
+        background: transparent;
+        color: var(--app-text);
+        padding: 0;
+    }
+
+    .audit-user-modal::backdrop {
+        background: color-mix(in srgb, var(--app-primary) 58%, transparent);
+        backdrop-filter: blur(4px);
+    }
+
+    .audit-user-modal-panel {
+        display: grid;
+        max-height: min(42rem, calc(100dvh - 2rem));
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        overflow: hidden;
+        border: 1px solid var(--app-border);
+        border-radius: .65rem;
+        background: var(--app-panel-strong);
+        box-shadow: 0 28px 70px rgba(18, 11, 36, .24);
+    }
+
+    .audit-user-modal-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 1rem;
+        border-bottom: 1px solid var(--app-border);
+        padding: 1rem;
+    }
+
+    .audit-user-modal-head span,
+    .audit-user-modal-tools label > span {
+        color: var(--app-muted);
+        font-size: .62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-user-modal-head h2 {
+        margin-top: .25rem;
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 900;
+        line-height: 1.15;
+    }
+
+    .audit-modal-close {
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel);
+        padding: .55rem .7rem;
+        color: var(--app-primary);
+        font-size: .72rem;
+        font-weight: 900;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+
+    .audit-user-modal-tools {
+        display: grid;
+        gap: .75rem;
+        border-bottom: 1px solid var(--app-border);
+        background: color-mix(in srgb, var(--app-panel) 72%, transparent);
+        padding: .9rem 1rem;
+    }
+
+    .audit-user-modal-tools label {
+        display: grid;
+        gap: .35rem;
+        min-width: 0;
+    }
+
+    .audit-user-modal-tools input {
+        width: 100%;
         border: 1px solid var(--app-border);
         border-radius: .45rem;
         background: var(--app-panel-strong);
-        padding: .4rem .55rem;
+        padding: .72rem .8rem;
+        color: var(--app-text);
+        font-weight: 750;
+    }
+
+    .audit-user-modal-tools > div,
+    .audit-user-modal-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .55rem;
+    }
+
+    .audit-user-picker {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        gap: .5rem;
+        min-height: 13rem;
+        overflow: auto;
+        background: var(--app-panel);
+        padding: .75rem;
+    }
+
+    .audit-user-picker label {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: .5rem;
+        align-items: center;
+        min-height: 3rem;
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel-strong);
+        padding: .5rem .65rem;
         cursor: pointer;
-        white-space: nowrap;
     }
 
     .audit-user-picker input {
@@ -1956,11 +2109,27 @@
         background: color-mix(in srgb, var(--app-secondary) 12%, var(--app-panel-strong));
     }
 
+    .audit-user-picker label:has(input:focus-visible) {
+        border-color: var(--app-accent-2);
+        box-shadow: 0 0 0 4px var(--app-ring);
+    }
+
+    .audit-user-picker [hidden] {
+        display: none;
+    }
+
+    .audit-user-picker-empty {
+        padding: .75rem;
+        color: var(--app-muted);
+        font-weight: 750;
+    }
+
     .audit-user-picker strong,
     .audit-user-picker small {
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .audit-user-picker strong {
@@ -1974,6 +2143,12 @@
         font-size: .58rem;
         font-weight: 900;
         text-transform: uppercase;
+    }
+
+    .audit-user-modal-actions {
+        border-top: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        padding: .9rem 1rem;
     }
 
     .audit-filters select {
@@ -2211,6 +2386,57 @@
 
         .audit-change-heading {
             display: none;
+        }
+
+        .audit-change-row span::before {
+            display: block;
+            margin-bottom: .12rem;
+            color: var(--app-muted);
+            content: attr(data-label);
+            font-size: .58rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+    }
+
+    @media (min-width: 721px) {
+        .audit-user-modal-tools {
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+        }
+
+        .audit-user-modal-tools > div {
+            min-width: 13rem;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .audit-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .audit-user-modal {
+            width: 100%;
+            max-height: 100dvh;
+            margin: 0;
+            border-radius: 0;
+        }
+
+        .audit-user-modal-panel {
+            max-height: 100dvh;
+            border-radius: 0;
+        }
+
+        .audit-user-modal-head,
+        .audit-user-modal-tools,
+        .audit-user-modal-actions {
+            padding-inline: .8rem;
+        }
+
+        .audit-user-picker {
+            grid-template-columns: 1fr;
+            min-height: 0;
+            padding: .65rem .8rem;
         }
     }
 }
