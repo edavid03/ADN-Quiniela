@@ -1993,6 +1993,7 @@
     .audit-user-modal {
         width: min(49rem, calc(100% - 1.5rem));
         max-height: min(44rem, calc(100dvh - 2rem));
+        margin: auto;
         border: 0;
         border-radius: .9rem;
         background: transparent;
@@ -2002,9 +2003,10 @@
 
     .audit-user-modal::backdrop {
         background:
-            radial-gradient(circle at 28% 18%, color-mix(in srgb, var(--app-secondary) 24%, transparent), transparent 18rem),
-            color-mix(in srgb, var(--app-primary) 66%, transparent);
-        backdrop-filter: blur(8px);
+            radial-gradient(circle at 28% 18%, color-mix(in srgb, var(--app-secondary) 22%, transparent), transparent 18rem),
+            radial-gradient(circle at 78% 82%, color-mix(in srgb, var(--app-accent-2) 20%, transparent), transparent 20rem),
+            color-mix(in srgb, var(--app-primary) 72%, transparent);
+        backdrop-filter: blur(16px) saturate(1.18);
     }
 
     .audit-user-modal-panel {
@@ -2016,9 +2018,10 @@
         border: 1px solid color-mix(in srgb, var(--app-border) 84%, var(--app-panel-strong));
         border-radius: .9rem;
         background:
-            linear-gradient(180deg, color-mix(in srgb, var(--app-panel-strong) 96%, transparent), var(--app-panel-strong)),
-            var(--app-panel-strong);
-        box-shadow: 0 32px 90px rgba(18, 11, 36, .32);
+            linear-gradient(145deg, color-mix(in srgb, var(--app-panel-strong) 88%, transparent), color-mix(in srgb, var(--app-panel) 86%, transparent)),
+            linear-gradient(180deg, color-mix(in srgb, var(--app-accent) 8%, transparent), transparent 34%);
+        box-shadow: 0 38px 110px rgba(18, 11, 36, .38);
+        backdrop-filter: blur(22px) saturate(1.08);
     }
 
     .audit-user-modal-panel::before {
@@ -2038,7 +2041,7 @@
         background:
             linear-gradient(135deg, color-mix(in srgb, var(--app-accent) 13%, transparent), transparent 34%),
             linear-gradient(115deg, color-mix(in srgb, var(--app-accent-2) 10%, transparent), transparent 52%),
-            var(--app-panel-strong);
+            color-mix(in srgb, var(--app-panel-strong) 82%, transparent);
         padding: 1.25rem 1.25rem 1rem;
     }
 
@@ -2085,7 +2088,7 @@
         display: grid;
         gap: .75rem;
         border-bottom: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
-        background: color-mix(in srgb, var(--app-panel) 74%, transparent);
+        background: color-mix(in srgb, var(--app-panel) 62%, transparent);
         padding: 1rem 1.25rem;
     }
 
@@ -2125,7 +2128,7 @@
         width: 100%;
         border: 1px solid var(--app-border);
         border-radius: .65rem;
-        background: var(--app-panel-strong);
+        background: color-mix(in srgb, var(--app-panel-strong) 82%, transparent);
         padding: .78rem 2.35rem .78rem .9rem;
         color: var(--app-text);
         font-weight: 750;
@@ -2144,6 +2147,7 @@
         align-items: center;
         gap: .65rem;
         border-bottom: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
+        background: color-mix(in srgb, var(--app-panel-strong) 54%, transparent);
         padding: .85rem 1.25rem;
     }
 
@@ -2154,7 +2158,7 @@
         border-radius: .65rem;
         background:
             linear-gradient(135deg, color-mix(in srgb, var(--app-secondary) 10%, transparent), transparent),
-            var(--app-panel);
+            color-mix(in srgb, var(--app-panel) 78%, transparent);
         padding: .55rem .65rem;
     }
 
