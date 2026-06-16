@@ -5,9 +5,9 @@
 @section('content')
     @php
         $actionMeta = [
-            'created' => ['label' => 'Creaci&oacute;n', 'tone' => 'audit-badge-create', 'mark' => '+'],
-            'updated' => ['label' => 'Actualizaci&oacute;n', 'tone' => 'audit-badge-update', 'mark' => '~'],
-            'deleted' => ['label' => 'Eliminaci&oacute;n', 'tone' => 'audit-badge-delete', 'mark' => '-'],
+            'created' => ['label' => 'Creaci&oacute;n', 'tone' => 'audit-badge-create'],
+            'updated' => ['label' => 'Actualizaci&oacute;n', 'tone' => 'audit-badge-update'],
+            'deleted' => ['label' => 'Eliminaci&oacute;n', 'tone' => 'audit-badge-delete'],
         ];
 
         $activeFilters = collect([
@@ -15,20 +15,43 @@
             request('action') ? 'Acci&oacute;n' : null,
             request('table_name') ? 'Tabla' : null,
         ])->filter()->count();
+
+        $formatAuditValue = function ($value) {
+            if ($value === null || $value === '') {
+                return 'Sin valor';
+            }
+
+            if (is_bool($value)) {
+                return $value ? 'Si' : 'No';
+            }
+
+            if (is_array($value)) {
+                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+
+            return (string) $value;
+        };
     @endphp
 
-    <section class="audit-hero">
-        <div class="audit-hero-copy">
+    <section class="page-header audit-header">
+        <div>
             <span class="kicker">Administraci&oacute;n</span>
             <h1>Historial de auditor&iacute;a</h1>
-            <p>Rastrea cada cambio sensible de la quiniela: qui&eacute;n lo hizo, sobre qu&eacute; registro y qu&eacute; valores se movieron.</p>
+            <p>Consulta qui&eacute;n hizo cada cambio, cu&aacute;ndo ocurri&oacute; y qu&eacute; datos se modificaron.</p>
         </div>
-        <div class="audit-hero-panel" aria-label="Resumen de auditoria">
-            <span class="audit-hero-label">Eventos encontrados</span>
-            <strong>{{ $auditorias->total() }}</strong>
+
+        <div class="audit-summary" aria-label="Resumen de auditoria">
             <div>
-                <span>{{ $activeFilters }} filtros activos</span>
-                <span>{{ $auditorias->count() }} en esta p&aacute;gina</span>
+                <span>Eventos</span>
+                <strong>{{ $auditorias->total() }}</strong>
+            </div>
+            <div>
+                <span>Filtros</span>
+                <strong>{{ $activeFilters }}</strong>
+            </div>
+            <div>
+                <span>En p&aacute;gina</span>
+                <strong>{{ $auditorias->count() }}</strong>
             </div>
         </div>
     </section>
@@ -38,7 +61,7 @@
             <fieldset class="audit-user-filter">
                 <legend>
                     <span>Usuarios</span>
-                    <small>{{ $selectedActorIds->isNotEmpty() ? $selectedActorIds->count().' seleccionados' : 'Todos los actores' }}</small>
+                    <small>{{ $selectedActorIds->isNotEmpty() ? $selectedActorIds->count().' seleccionados' : 'Todos' }}</small>
                 </legend>
 
                 <div class="audit-user-picker">
@@ -93,29 +116,31 @@
     <section class="audit-ledger" aria-label="Eventos de auditoria">
         @forelse ($auditorias as $auditoria)
             @php
-                $meta = $actionMeta[$auditoria->action] ?? ['label' => e($auditoria->action), 'tone' => 'audit-badge-neutral', 'mark' => '?'];
+                $meta = $actionMeta[$auditoria->action] ?? ['label' => e($auditoria->action), 'tone' => 'audit-badge-neutral'];
                 $createdAtCaracas = $auditoria->created_at->copy()->setTimezone('America/Caracas');
+                $oldValues = $auditoria->old_values ?? [];
+                $newValues = $auditoria->new_values ?? [];
+                $changedFields = collect(array_keys($oldValues))
+                    ->merge(array_keys($newValues))
+                    ->unique()
+                    ->values();
             @endphp
 
             <article class="audit-event">
-                <div class="audit-event-time">
-                    <span>{{ $createdAtCaracas->format('d/m/Y') }}</span>
-                    <strong>{{ $createdAtCaracas->format('g:i A') }}</strong>
-                    <small>{{ $createdAtCaracas->format('s') }} seg</small>
-                </div>
-
                 <div class="audit-event-card">
                     <div class="audit-event-head">
-                        <span class="audit-mark {{ $meta['tone'] }}">{{ $meta['mark'] }}</span>
                         <div>
                             <span class="audit-badge {{ $meta['tone'] }}">{!! $meta['label'] !!}</span>
                             <h2>{{ $auditoria->table_name }} <span>ID {{ $auditoria->record_id }}</span></h2>
                         </div>
+                        <time datetime="{{ $auditoria->created_at->toIso8601String() }}">
+                            {{ $createdAtCaracas->format('d/m/Y') }} · {{ $createdAtCaracas->format('g:i A') }}
+                        </time>
                     </div>
 
                     <div class="audit-facts">
                         <div>
-                            <span>Actor</span>
+                            <span>Usuario</span>
                             <strong>{{ $auditoria->actor_name ?: ucfirst($auditoria->actor_type) }}</strong>
                             <small>{{ $auditoria->actor_type }}</small>
                         </div>
@@ -126,24 +151,24 @@
                         </div>
                     </div>
 
-                    <div class="audit-change-grid">
-                        @if ($auditoria->old_values)
-                            <details class="audit-change-card audit-change-before">
-                                <summary>Valores anteriores</summary>
-                                <pre>{{ json_encode($auditoria->old_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
-                            </details>
-                        @endif
+                    <div class="audit-changes">
+                        @if ($changedFields->isNotEmpty())
+                            <div class="audit-change-row audit-change-heading" aria-hidden="true">
+                                <span>Campo</span>
+                                <span>Antes</span>
+                                <span>Despues</span>
+                            </div>
 
-                        @if ($auditoria->new_values)
-                            <details class="audit-change-card audit-change-after" open>
-                                <summary>Valores posteriores</summary>
-                                <pre>{{ json_encode($auditoria->new_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
-                            </details>
-                        @endif
-
-                        @unless ($auditoria->old_values || $auditoria->new_values)
+                            @foreach ($changedFields as $field)
+                                <div class="audit-change-row">
+                                    <strong>{{ $field }}</strong>
+                                    <span>{{ $formatAuditValue($oldValues[$field] ?? null) }}</span>
+                                    <span>{{ $formatAuditValue($newValues[$field] ?? null) }}</span>
+                                </div>
+                            @endforeach
+                        @else
                             <p class="audit-empty-change">Este evento no registr&oacute; valores comparables.</p>
-                        @endunless
+                        @endif
                     </div>
                 </div>
             </article>
