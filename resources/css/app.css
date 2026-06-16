@@ -1991,58 +1991,40 @@
     }
 
     .audit-user-modal {
-        width: min(49rem, calc(100% - 1.5rem));
-        max-height: min(44rem, calc(100dvh - 2rem));
+        width: min(44rem, calc(100% - 1rem));
+        max-height: min(40rem, calc(100dvh - 1rem));
         margin: auto;
         border: 0;
-        border-radius: .9rem;
+        border-radius: .75rem;
         background: transparent;
         color: var(--app-text);
         padding: 0;
     }
 
     .audit-user-modal::backdrop {
-        background:
-            radial-gradient(circle at 28% 18%, color-mix(in srgb, var(--app-secondary) 22%, transparent), transparent 18rem),
-            radial-gradient(circle at 78% 82%, color-mix(in srgb, var(--app-accent-2) 20%, transparent), transparent 20rem),
-            color-mix(in srgb, var(--app-primary) 72%, transparent);
-        backdrop-filter: blur(16px) saturate(1.18);
+        background: color-mix(in srgb, var(--app-primary) 62%, transparent);
+        backdrop-filter: blur(8px);
     }
 
     .audit-user-modal-panel {
-        position: relative;
         display: grid;
-        max-height: min(44rem, calc(100dvh - 2rem));
+        max-height: min(40rem, calc(100dvh - 1rem));
         grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
         overflow: hidden;
-        border: 1px solid color-mix(in srgb, var(--app-border) 84%, var(--app-panel-strong));
-        border-radius: .9rem;
-        background:
-            linear-gradient(145deg, color-mix(in srgb, var(--app-panel-strong) 88%, transparent), color-mix(in srgb, var(--app-panel) 86%, transparent)),
-            linear-gradient(180deg, color-mix(in srgb, var(--app-accent) 8%, transparent), transparent 34%);
-        box-shadow: 0 38px 110px rgba(18, 11, 36, .38);
-        backdrop-filter: blur(22px) saturate(1.08);
-    }
-
-    .audit-user-modal-panel::before {
-        position: absolute;
-        inset: 0 0 auto;
-        height: .28rem;
-        content: '';
-        background: linear-gradient(90deg, var(--app-secondary), var(--app-accent), var(--app-accent-2));
+        border: 1px solid var(--app-border);
+        border-radius: .75rem;
+        background: var(--app-panel-strong);
+        box-shadow: 0 26px 70px rgba(18, 11, 36, .28);
     }
 
     .audit-user-modal-head {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
-        align-items: start;
-        gap: 1rem;
-        border-bottom: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
-        background:
-            linear-gradient(135deg, color-mix(in srgb, var(--app-accent) 13%, transparent), transparent 34%),
-            linear-gradient(115deg, color-mix(in srgb, var(--app-accent-2) 10%, transparent), transparent 52%),
-            color-mix(in srgb, var(--app-panel-strong) 82%, transparent);
-        padding: 1.25rem 1.25rem 1rem;
+        align-items: center;
+        gap: .75rem;
+        border-bottom: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        padding: 1rem;
     }
 
     .audit-user-modal-head span,
@@ -2056,80 +2038,53 @@
     .audit-user-modal-head h2 {
         margin-top: .25rem;
         font-family: var(--font-display);
-        font-size: clamp(1.25rem, 3vw, 1.7rem);
+        font-size: 1.2rem;
         font-weight: 900;
-        line-height: 1.05;
+        line-height: 1.15;
     }
 
     .audit-modal-close {
         display: inline-grid;
-        width: 2.4rem;
-        height: 2.4rem;
+        width: 2.25rem;
+        height: 2.25rem;
         place-items: center;
-        border: 1px solid color-mix(in srgb, var(--app-border) 82%, transparent);
+        border: 1px solid var(--app-border);
         border-radius: 999px;
-        background: color-mix(in srgb, var(--app-panel) 88%, transparent);
+        background: var(--app-panel);
         padding: 0;
         color: var(--app-primary);
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 900;
         cursor: pointer;
         line-height: 1;
-        transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+        transition: background 180ms ease, color 180ms ease;
     }
 
     .audit-modal-close:hover {
         background: var(--app-primary);
         color: var(--app-panel-strong);
-        transform: rotate(90deg);
     }
 
     .audit-user-modal-tools {
         display: grid;
         gap: .75rem;
-        border-bottom: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
-        background: color-mix(in srgb, var(--app-panel) 62%, transparent);
-        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--app-border);
+        background: var(--app-panel);
+        padding: 1rem;
     }
 
     .audit-user-modal-tools label {
-        position: relative;
         display: grid;
         gap: .35rem;
         min-width: 0;
     }
 
-    .audit-user-modal-tools label::after {
-        position: absolute;
-        right: .85rem;
-        bottom: .82rem;
-        width: .8rem;
-        height: .8rem;
-        border: 2px solid var(--app-muted);
-        border-radius: 999px;
-        content: '';
-        opacity: .62;
-    }
-
-    .audit-user-modal-tools label::before {
-        position: absolute;
-        right: .7rem;
-        bottom: .68rem;
-        width: .42rem;
-        height: 2px;
-        content: '';
-        background: var(--app-muted);
-        opacity: .62;
-        transform: rotate(45deg);
-        transform-origin: left center;
-    }
-
     .audit-user-modal-tools input {
         width: 100%;
         border: 1px solid var(--app-border);
-        border-radius: .65rem;
-        background: color-mix(in srgb, var(--app-panel-strong) 82%, transparent);
-        padding: .78rem 2.35rem .78rem .9rem;
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        padding: .72rem .8rem;
         color: var(--app-text);
         font-weight: 750;
     }
@@ -2146,19 +2101,17 @@
         grid-template-columns: auto auto minmax(0, 1fr);
         align-items: center;
         gap: .65rem;
-        border-bottom: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
-        background: color-mix(in srgb, var(--app-panel-strong) 54%, transparent);
-        padding: .85rem 1.25rem;
+        border-bottom: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        padding: .75rem 1rem;
     }
 
     .audit-user-modal-status > div {
         display: grid;
         min-width: 5.5rem;
-        border: 1px solid color-mix(in srgb, var(--app-border) 76%, transparent);
-        border-radius: .65rem;
-        background:
-            linear-gradient(135deg, color-mix(in srgb, var(--app-secondary) 10%, transparent), transparent),
-            color-mix(in srgb, var(--app-panel) 78%, transparent);
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel);
         padding: .55rem .65rem;
     }
 
@@ -2186,21 +2139,20 @@
     }
 
     .audit-user-role-tabs {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: .35rem;
-        border-bottom: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
+        border-bottom: 1px solid var(--app-border);
         background: var(--app-panel-strong);
-        padding: .75rem 1.25rem;
+        padding: .65rem 1rem;
     }
 
     .audit-user-role-tabs button {
         min-width: 0;
-        flex: 1 1 8rem;
-        border: 1px solid transparent;
-        border-radius: 999px;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
         background: var(--app-panel);
-        padding: .62rem .75rem;
+        padding: .55rem .45rem;
         color: var(--app-muted);
         font-size: .68rem;
         font-weight: 900;
@@ -2223,36 +2175,30 @@
 
     .audit-user-picker {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-        gap: .65rem;
-        min-height: 13rem;
+        grid-template-columns: 1fr;
+        gap: .45rem;
+        min-height: 12rem;
         overflow: auto;
-        background:
-            linear-gradient(180deg, color-mix(in srgb, var(--app-panel) 88%, transparent), var(--app-panel)),
-            var(--app-panel);
-        padding: .9rem 1.25rem;
+        background: var(--app-panel);
+        padding: .75rem 1rem;
     }
 
     .audit-user-picker label {
-        position: relative;
         display: grid;
-        grid-template-columns: auto auto minmax(0, 1fr);
-        gap: .65rem;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: .55rem;
         align-items: center;
-        min-height: 3.65rem;
-        border: 1px solid color-mix(in srgb, var(--app-border) 78%, transparent);
-        border-radius: .75rem;
+        min-height: 3rem;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
         background: var(--app-panel-strong);
-        padding: .62rem .75rem;
+        padding: .55rem .7rem;
         cursor: pointer;
-        box-shadow: 0 10px 24px rgba(18, 11, 36, .05);
-        transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease, background 180ms ease;
+        transition: border-color 180ms ease, background 180ms ease;
     }
 
     .audit-user-picker label:hover {
         border-color: color-mix(in srgb, var(--app-accent-2) 48%, var(--app-border));
-        box-shadow: 0 14px 30px rgba(18, 11, 36, .09);
-        transform: translateY(-1px);
     }
 
     .audit-user-picker input {
@@ -2263,10 +2209,7 @@
 
     .audit-user-picker label:has(input:checked) {
         border-color: color-mix(in srgb, var(--app-secondary) 58%, var(--app-border));
-        background:
-            linear-gradient(135deg, color-mix(in srgb, var(--app-secondary) 15%, transparent), transparent 64%),
-            var(--app-panel-strong);
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-secondary) 30%, transparent), 0 14px 30px rgba(18, 11, 36, .09);
+        background: color-mix(in srgb, var(--app-secondary) 12%, var(--app-panel-strong));
     }
 
     .audit-user-picker label:has(input:focus-visible) {
@@ -2278,29 +2221,8 @@
         display: none;
     }
 
-    .audit-user-picker label > span:last-child {
+    .audit-user-picker label > span {
         min-width: 0;
-    }
-
-    .audit-user-avatar {
-        display: inline-grid;
-        width: 2.15rem;
-        height: 2.15rem;
-        place-items: center;
-        border-radius: 999px;
-        background:
-            linear-gradient(135deg, color-mix(in srgb, var(--app-primary) 88%, transparent), color-mix(in srgb, var(--app-secondary) 78%, transparent));
-        color: var(--app-panel-strong);
-        font-family: var(--font-display);
-        font-size: .7rem;
-        font-weight: 900;
-        line-height: 1;
-        text-transform: uppercase;
-    }
-
-    .audit-user-picker label:has(input:checked) .audit-user-avatar {
-        background: linear-gradient(135deg, var(--app-secondary), var(--app-accent));
-        color: var(--fwc-aux-ink);
     }
 
     .audit-user-picker-empty {
@@ -2310,9 +2232,9 @@
     }
 
     .audit-user-no-results {
-        border-top: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
+        border-top: 1px solid var(--app-border);
         background: var(--app-panel);
-        padding: .9rem 1.25rem;
+        padding: .8rem 1rem;
         color: var(--app-muted);
         font-size: .82rem;
         font-weight: 750;
@@ -2340,10 +2262,9 @@
     }
 
     .audit-user-modal-actions {
-        border-top: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
-        background:
-            linear-gradient(180deg, color-mix(in srgb, var(--app-panel) 76%, transparent), var(--app-panel-strong));
-        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        padding: .9rem 1rem;
     }
 
     .audit-filters select {
@@ -2602,6 +2523,10 @@
 
         .audit-user-modal-tools > div {
             min-width: 18rem;
+        }
+
+        .audit-user-picker {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
