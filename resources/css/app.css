@@ -1816,4 +1816,401 @@
             padding-inline: .55rem;
         }
     }
+
+    .audit-header {
+        margin-bottom: 1.25rem;
+    }
+
+    .audit-header h1 {
+        margin-top: .55rem;
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 5vw, 3.25rem);
+        font-weight: 900;
+        line-height: 1.02;
+    }
+
+    .audit-header p {
+        max-width: 39rem;
+        margin-top: .65rem;
+        color: var(--app-muted);
+        font-weight: 650;
+        line-height: 1.6;
+    }
+
+    .audit-summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: .6rem;
+        align-self: end;
+        min-width: min(100%, 24rem);
+    }
+
+    .audit-summary > div {
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        padding: .8rem;
+    }
+
+    .audit-summary span {
+        display: block;
+        color: var(--app-muted);
+        font-size: .62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-summary strong {
+        display: block;
+        margin-top: .25rem;
+        font-family: var(--font-display);
+        font-size: 1.45rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .audit-toolbar {
+        display: grid;
+        gap: .8rem;
+        margin-bottom: 1rem;
+    }
+
+    .audit-filters {
+        display: grid;
+        gap: .75rem;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        padding: .9rem;
+        box-shadow: none;
+    }
+
+    .audit-filters label,
+    .audit-user-filter {
+        display: grid;
+        gap: .35rem;
+        min-width: 0;
+    }
+
+    .audit-user-filter {
+        margin: 0;
+        border: 0;
+        padding: 0;
+    }
+
+    .audit-user-filter legend,
+    .audit-filters label > span {
+        color: var(--app-muted);
+        font-size: .68rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-user-filter legend {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        gap: .75rem;
+        margin-bottom: .35rem;
+    }
+
+    .audit-user-filter legend small {
+        color: var(--app-secondary);
+        font-size: .62rem;
+        font-weight: 900;
+    }
+
+    .audit-user-picker {
+        display: flex;
+        gap: .45rem;
+        max-height: none;
+        overflow-x: auto;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel);
+        padding: .45rem;
+    }
+
+    .audit-user-picker label {
+        display: inline-grid;
+        grid-template-columns: auto minmax(7rem, 1fr);
+        gap: .45rem;
+        align-items: center;
+        min-height: 2.45rem;
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel-strong);
+        padding: .4rem .55rem;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .audit-user-picker input {
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--app-secondary);
+    }
+
+    .audit-user-picker label:has(input:checked) {
+        border-color: color-mix(in srgb, var(--app-secondary) 58%, var(--app-border));
+        background: color-mix(in srgb, var(--app-secondary) 12%, var(--app-panel-strong));
+    }
+
+    .audit-user-picker strong,
+    .audit-user-picker small {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .audit-user-picker strong {
+        color: var(--app-text);
+        font-size: .76rem;
+        font-weight: 900;
+    }
+
+    .audit-user-picker small {
+        color: var(--app-muted);
+        font-size: .58rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-filters select {
+        width: 100%;
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel);
+        padding: .72rem .8rem;
+        color: var(--app-text);
+        font-weight: 750;
+    }
+
+    .audit-filter-actions,
+    .audit-shortcuts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .55rem;
+    }
+
+    .audit-ledger {
+        display: grid;
+        gap: .75rem;
+    }
+
+    .audit-event {
+        display: block;
+    }
+
+    .audit-event::before,
+    .audit-event-card::before {
+        display: none;
+    }
+
+    .audit-event-card {
+        overflow: hidden;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        box-shadow: none;
+    }
+
+    .audit-event-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 1rem;
+        align-items: start;
+        border-bottom: 1px solid var(--app-border);
+        padding: .9rem 1rem;
+    }
+
+    .audit-event-head h2 {
+        margin-top: .35rem;
+        overflow-wrap: anywhere;
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 900;
+        line-height: 1.25;
+    }
+
+    .audit-event-head h2 span {
+        color: var(--app-muted);
+        font-size: .75rem;
+        white-space: nowrap;
+    }
+
+    .audit-event-head time {
+        color: var(--app-muted);
+        font-size: .78rem;
+        font-weight: 850;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .audit-badge {
+        display: inline-flex;
+        width: fit-content;
+        border-radius: 999px;
+        padding: .28rem .5rem;
+        font-size: .62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-facts {
+        display: grid;
+        gap: .7rem;
+        padding: .9rem 1rem;
+    }
+
+    .audit-facts > div {
+        min-width: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        padding: 0;
+    }
+
+    .audit-facts span {
+        display: block;
+        color: var(--app-muted);
+        font-size: .62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-facts strong {
+        display: block;
+        margin-top: .25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-family: var(--font-display);
+        font-size: .9rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .audit-facts small {
+        display: block;
+        margin-top: .15rem;
+        overflow: hidden;
+        color: var(--app-muted);
+        font-size: .7rem;
+        font-weight: 750;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .audit-changes {
+        display: grid;
+        border-top: 1px solid var(--app-border);
+    }
+
+    .audit-change-row {
+        display: grid;
+        grid-template-columns: minmax(7rem, .75fr) repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+        align-items: start;
+        border-top: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
+        padding: .7rem 1rem;
+        font-size: .8rem;
+    }
+
+    .audit-change-row:first-child {
+        border-top: 0;
+    }
+
+    .audit-change-heading {
+        background: var(--app-panel);
+        color: var(--app-muted);
+        font-size: .62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-change-row strong {
+        overflow-wrap: anywhere;
+        font-family: var(--font-display);
+        font-weight: 900;
+    }
+
+    .audit-change-row span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        color: var(--app-muted);
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    .audit-empty-change {
+        padding: .85rem 1rem;
+        color: var(--app-muted);
+        font-weight: 750;
+    }
+
+    .audit-empty-state {
+        display: grid;
+        justify-items: start;
+        gap: .7rem;
+        border: 1px dashed var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel-strong);
+        padding: 1.5rem;
+    }
+
+    .audit-empty-state span {
+        display: none;
+    }
+
+    .audit-empty-state h2 {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
+
+    @media (min-width: 640px) {
+        .audit-filters {
+            grid-template-columns: minmax(0, 1fr) minmax(10rem, .45fr) minmax(10rem, .45fr) auto;
+            align-items: end;
+        }
+
+        .audit-user-filter,
+        .audit-filters label:last-of-type,
+        .audit-filter-actions {
+            grid-column: auto;
+        }
+
+        .audit-facts {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .audit-summary {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            min-width: 0;
+        }
+
+        .audit-toolbar {
+            grid-template-columns: 1fr;
+        }
+
+        .audit-event-head {
+            grid-template-columns: 1fr;
+            gap: .55rem;
+        }
+
+        .audit-event-head time {
+            text-align: left;
+        }
+
+        .audit-change-row {
+            grid-template-columns: 1fr;
+            gap: .35rem;
+        }
+
+        .audit-change-heading {
+            display: none;
+        }
+    }
 }
