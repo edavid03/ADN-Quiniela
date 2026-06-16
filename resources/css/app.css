@@ -1999,7 +1999,7 @@
     .audit-user-modal-panel {
         display: grid;
         max-height: min(42rem, calc(100dvh - 2rem));
-        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
         overflow: hidden;
         border: 1px solid var(--app-border);
         border-radius: .65rem;
@@ -2075,6 +2075,81 @@
         gap: .55rem;
     }
 
+    .audit-user-modal-status {
+        display: grid;
+        grid-template-columns: auto auto minmax(0, 1fr);
+        align-items: center;
+        gap: .65rem;
+        border-bottom: 1px solid var(--app-border);
+        padding: .75rem 1rem;
+    }
+
+    .audit-user-modal-status > div {
+        display: grid;
+        min-width: 5.5rem;
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel);
+        padding: .55rem .65rem;
+    }
+
+    .audit-user-modal-status span {
+        color: var(--app-muted);
+        font-size: .55rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .audit-user-modal-status strong {
+        margin-top: .1rem;
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .audit-user-modal-status p {
+        min-width: 0;
+        color: var(--app-muted);
+        font-size: .78rem;
+        font-weight: 750;
+        line-height: 1.45;
+    }
+
+    .audit-user-role-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: .35rem;
+        border-bottom: 1px solid var(--app-border);
+        background: var(--app-panel-strong);
+        padding: .65rem 1rem;
+    }
+
+    .audit-user-role-tabs button {
+        min-width: 0;
+        border: 1px solid var(--app-border);
+        border-radius: .45rem;
+        background: var(--app-panel);
+        padding: .55rem .45rem;
+        color: var(--app-muted);
+        font-size: .68rem;
+        font-weight: 900;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+
+    .audit-user-role-tabs button.is-active {
+        border-color: color-mix(in srgb, var(--app-secondary) 58%, var(--app-border));
+        background: color-mix(in srgb, var(--app-secondary) 12%, var(--app-panel-strong));
+        color: var(--app-secondary);
+    }
+
+    .audit-user-role-tabs button:focus-visible {
+        outline: none;
+        border-color: var(--app-accent-2);
+        box-shadow: 0 0 0 4px var(--app-ring);
+    }
+
     .audit-user-picker {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
@@ -2121,6 +2196,15 @@
     .audit-user-picker-empty {
         padding: .75rem;
         color: var(--app-muted);
+        font-weight: 750;
+    }
+
+    .audit-user-no-results {
+        border-top: 1px solid var(--app-border);
+        background: var(--app-panel);
+        padding: .8rem 1rem;
+        color: var(--app-muted);
+        font-size: .82rem;
         font-weight: 750;
     }
 
@@ -2281,40 +2365,51 @@
         border-top: 1px solid var(--app-border);
     }
 
-    .audit-change-row {
+    .audit-json-grid {
         display: grid;
-        grid-template-columns: minmax(7rem, .75fr) repeat(2, minmax(0, 1fr));
         gap: .75rem;
-        align-items: start;
-        border-top: 1px solid color-mix(in srgb, var(--app-border) 72%, transparent);
-        padding: .7rem 1rem;
-        font-size: .8rem;
+        padding: .9rem 1rem;
     }
 
-    .audit-change-row:first-child {
-        border-top: 0;
-    }
-
-    .audit-change-heading {
-        background: var(--app-panel);
-        color: var(--app-muted);
-        font-size: .62rem;
-        font-weight: 900;
-        text-transform: uppercase;
-    }
-
-    .audit-change-row strong {
-        overflow-wrap: anywhere;
-        font-family: var(--font-display);
-        font-weight: 900;
-    }
-
-    .audit-change-row span {
+    .audit-json-block {
         min-width: 0;
-        overflow-wrap: anywhere;
+        overflow: hidden;
+        border: 1px solid var(--app-border);
+        border-radius: .5rem;
+        background: var(--app-panel);
+    }
+
+    .audit-json-block > strong {
+        display: block;
+        border-bottom: 1px solid var(--app-border);
+        padding: .65rem .75rem;
+        font-family: var(--font-display);
+        font-size: .76rem;
+        font-weight: 900;
+        text-transform: lowercase;
+    }
+
+    .audit-json-old > strong {
+        color: var(--app-secondary);
+    }
+
+    .audit-json-new > strong {
+        color: var(--app-success);
+    }
+
+    .audit-json-block pre {
+        max-height: 22rem;
+        overflow: auto;
+        background:
+            repeating-linear-gradient(180deg, transparent 0 1.75rem, color-mix(in srgb, var(--app-border) 18%, transparent) 1.75rem 1.8rem),
+            var(--app-panel-strong);
+        padding: .85rem;
         color: var(--app-muted);
-        font-weight: 700;
-        line-height: 1.5;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+        font-size: .74rem;
+        font-weight: 750;
+        line-height: 1.55;
+        white-space: pre;
     }
 
     .audit-empty-change {
@@ -2379,34 +2474,23 @@
             text-align: left;
         }
 
-        .audit-change-row {
-            grid-template-columns: 1fr;
-            gap: .35rem;
-        }
-
-        .audit-change-heading {
-            display: none;
-        }
-
-        .audit-change-row span::before {
-            display: block;
-            margin-bottom: .12rem;
-            color: var(--app-muted);
-            content: attr(data-label);
-            font-size: .58rem;
-            font-weight: 900;
-            text-transform: uppercase;
+        .audit-json-grid {
+            padding: .75rem;
         }
     }
 
     @media (min-width: 721px) {
+        .audit-json-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .audit-user-modal-tools {
             grid-template-columns: minmax(0, 1fr) auto;
             align-items: end;
         }
 
         .audit-user-modal-tools > div {
-            min-width: 13rem;
+            min-width: 18rem;
         }
     }
 
@@ -2429,8 +2513,22 @@
 
         .audit-user-modal-head,
         .audit-user-modal-tools,
+        .audit-user-modal-status,
+        .audit-user-role-tabs,
         .audit-user-modal-actions {
             padding-inline: .8rem;
+        }
+
+        .audit-user-modal-status {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .audit-user-modal-status p {
+            grid-column: 1 / -1;
+        }
+
+        .audit-user-role-tabs {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .audit-user-picker {
