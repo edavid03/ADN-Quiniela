@@ -232,6 +232,48 @@ class AdminAuditoriaTest extends TestCase
             ->assertDontSee('No debe mostrarse');
     }
 
+    public function test_admin_can_filter_audit_history_by_multiple_users(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true, 'username' => 'admin_oculto']);
+        $visibleUser = User::factory()->create(['username' => 'usuario_visible']);
+        $otherUser = User::factory()->create(['username' => 'usuario_oculto']);
+
+        Auditoria::create([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->username,
+            'actor_type' => 'usuario',
+            'action' => 'updated',
+            'table_name' => 'users',
+            'record_id' => '1',
+            'new_values' => ['name' => 'Admin no debe mostrarse'],
+        ]);
+        Auditoria::create([
+            'actor_id' => $visibleUser->id,
+            'actor_name' => $visibleUser->username,
+            'actor_type' => 'usuario',
+            'action' => 'updated',
+            'table_name' => 'users',
+            'record_id' => '2',
+            'new_values' => ['name' => 'Usuario debe mostrarse'],
+        ]);
+        Auditoria::create([
+            'actor_id' => $otherUser->id,
+            'actor_name' => $otherUser->username,
+            'actor_type' => 'usuario',
+            'action' => 'updated',
+            'table_name' => 'users',
+            'record_id' => '3',
+            'new_values' => ['name' => 'Otro usuario no debe mostrarse'],
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/auditoria?'.http_build_query(['actor_ids' => [$visibleUser->id]]))
+            ->assertOk()
+            ->assertSee('Usuario debe mostrarse')
+            ->assertDontSee('Admin no debe mostrarse')
+            ->assertDontSee('Otro usuario no debe mostrarse');
+    }
+
     private function crearPartido(int $localId = 1, int $visitanteId = 2): Partido
     {
         $local = Equipo::create(['id' => $localId, 'name' => 'Local', 'code' => 'LOC', 'grupo' => 'A']);
