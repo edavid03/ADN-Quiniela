@@ -21,20 +21,8 @@
             ->pluck('actor_name')
             ->values();
 
-        $formatAuditValue = function ($value) {
-            if ($value === null || $value === '') {
-                return 'Sin valor';
-            }
-
-            if (is_bool($value)) {
-                return $value ? 'Si' : 'No';
-            }
-
-            if (is_array($value)) {
-                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            }
-
-            return (string) $value;
+        $formatAuditJson = function ($value) {
+            return json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         };
     @endphp
 
@@ -101,14 +89,39 @@
                                 <input type="search" placeholder="Nombre, usuario o rol" data-audit-user-search>
                             </label>
                             <div>
-                                <button type="button" class="btn btn-secondary" data-audit-user-check-all>Todos</button>
+                                <button type="button" class="btn btn-secondary" data-audit-user-check-all>Marcar visibles</button>
                                 <button type="button" class="btn btn-secondary" data-audit-user-clear>Limpiar</button>
                             </div>
                         </div>
 
+                        <div class="audit-user-modal-status" aria-live="polite">
+                            <div>
+                                <span>Seleccionados</span>
+                                <strong data-audit-user-selected-count>{{ $selectedActorIds->count() }}</strong>
+                            </div>
+                            <div>
+                                <span>Visibles</span>
+                                <strong data-audit-user-visible-count>{{ $actors->count() }}</strong>
+                            </div>
+                            <p data-audit-user-selection-text>
+                                {{ $selectedActorIds->isNotEmpty() ? 'Se mostraran eventos solo de los usuarios marcados.' : 'Sin usuarios marcados: se mostraran todos los eventos.' }}
+                            </p>
+                        </div>
+
+                        <div class="audit-user-role-tabs" role="group" aria-label="Filtrar lista de usuarios">
+                            <button type="button" class="is-active" data-audit-user-role-filter="all">Todos</button>
+                            <button type="button" data-audit-user-role-filter="admin">Admins</button>
+                            <button type="button" data-audit-user-role-filter="user">Usuarios</button>
+                            <button type="button" data-audit-user-role-filter="selected">Marcados</button>
+                        </div>
+
                         <div class="audit-user-picker" data-audit-user-list>
                             @forelse ($actors as $actor)
-                                <label data-audit-user-option data-audit-user-name="{{ \Illuminate\Support\Str::lower($actor->actor_name.' '.($actor->is_admin ? 'admin' : 'usuario')) }}">
+                                <label
+                                    data-audit-user-option
+                                    data-audit-user-role="{{ $actor->is_admin ? 'admin' : 'user' }}"
+                                    data-audit-user-name="{{ \Illuminate\Support\Str::lower($actor->actor_name.' '.($actor->is_admin ? 'admin' : 'usuario')) }}"
+                                >
                                     <input type="checkbox" name="actor_ids[]" value="{{ $actor->actor_id }}" @checked($selectedActorIds->contains((int) $actor->actor_id))>
                                     <span>
                                         <strong>{{ $actor->actor_name }}</strong>
@@ -123,6 +136,8 @@
                                 <p class="audit-user-picker-empty">No hay usuarios con eventos registrados.</p>
                             @endforelse
                         </div>
+
+                        <p class="audit-user-no-results" data-audit-user-no-results hidden>No hay usuarios que coincidan con esa busqueda.</p>
 
                         <footer class="audit-user-modal-actions">
                             <button type="button" class="btn btn-secondary" data-audit-user-modal-close>Cancelar</button>
@@ -169,12 +184,9 @@
             @php
                 $meta = $actionMeta[$auditoria->action] ?? ['label' => e($auditoria->action), 'tone' => 'audit-badge-neutral'];
                 $createdAtCaracas = $auditoria->created_at->copy()->setTimezone('America/Caracas');
-                $oldValues = $auditoria->old_values ?? [];
-                $newValues = $auditoria->new_values ?? [];
-                $changedFields = collect(array_keys($oldValues))
-                    ->merge(array_keys($newValues))
-                    ->unique()
-                    ->values();
+                $oldValues = $auditoria->old_values;
+                $newValues = $auditoria->new_values;
+                $hasAuditValues = $oldValues !== null || $newValues !== null;
             @endphp
 
             <article class="audit-event">
@@ -203,20 +215,17 @@
                     </div>
 
                     <div class="audit-changes">
-                        @if ($changedFields->isNotEmpty())
-                            <div class="audit-change-row audit-change-heading" aria-hidden="true">
-                                <span>Campo</span>
-                                <span>Antes</span>
-                                <span>Despues</span>
-                            </div>
-
-                            @foreach ($changedFields as $field)
-                                <div class="audit-change-row">
-                                    <strong>{{ $field }}</strong>
-                                    <span data-label="Antes">{{ $formatAuditValue($oldValues[$field] ?? null) }}</span>
-                                    <span data-label="Despues">{{ $formatAuditValue($newValues[$field] ?? null) }}</span>
+                        @if ($hasAuditValues)
+                            <div class="audit-json-grid">
+                                <div class="audit-json-block audit-json-old">
+                                    <strong>old:</strong>
+                                    <pre>{{ $formatAuditJson($oldValues) }}</pre>
                                 </div>
-                            @endforeach
+                                <div class="audit-json-block audit-json-new">
+                                    <strong>new:</strong>
+                                    <pre>{{ $formatAuditJson($newValues) }}</pre>
+                                </div>
+                            </div>
                         @else
                             <p class="audit-empty-change">Este evento no registr&oacute; valores comparables.</p>
                         @endif

@@ -35,7 +35,13 @@ if (auditUserModal) {
     const userCheckboxes = [...auditUserModal.querySelectorAll('input[name="actor_ids[]"]')];
     const checkAllButton = auditUserModal.querySelector('[data-audit-user-check-all]');
     const clearButton = auditUserModal.querySelector('[data-audit-user-clear]');
+    const roleFilterButtons = [...auditUserModal.querySelectorAll('[data-audit-user-role-filter]')];
+    const selectedCount = auditUserModal.querySelector('[data-audit-user-selected-count]');
+    const visibleCount = auditUserModal.querySelector('[data-audit-user-visible-count]');
+    const selectionText = auditUserModal.querySelector('[data-audit-user-selection-text]');
+    const noResults = auditUserModal.querySelector('[data-audit-user-no-results]');
     let initialSelection = new Set();
+    let activeRoleFilter = 'all';
 
     const captureSelection = () => new Set(
         userCheckboxes
@@ -49,16 +55,56 @@ if (auditUserModal) {
         });
     };
 
+    const updateSelectionState = () => {
+        const checkedCount = userCheckboxes.filter((checkbox) => checkbox.checked).length;
+
+        if (selectedCount) {
+            selectedCount.textContent = checkedCount.toString();
+        }
+
+        if (selectionText) {
+            selectionText.textContent = checkedCount === 0
+                ? 'Sin usuarios marcados: se mostraran todos los eventos.'
+                : `Se mostraran eventos de ${checkedCount} usuario${checkedCount === 1 ? '' : 's'} marcado${checkedCount === 1 ? '' : 's'}.`;
+        }
+    };
+
     const filterOptions = () => {
         const query = (searchInput?.value ?? '').trim().toLocaleLowerCase();
+        let visibleOptions = 0;
 
         userOptions.forEach((option) => {
-            option.hidden = query !== '' && ! option.dataset.auditUserName.includes(query);
+            const checkbox = option.querySelector('input');
+            const matchesQuery = query === '' || option.dataset.auditUserName.includes(query);
+            const matchesRole = activeRoleFilter === 'all'
+                || option.dataset.auditUserRole === activeRoleFilter
+                || (activeRoleFilter === 'selected' && checkbox.checked);
+            const isVisible = matchesQuery && matchesRole;
+
+            option.hidden = ! isVisible;
+            visibleOptions += isVisible ? 1 : 0;
         });
+
+        if (visibleCount) {
+            visibleCount.textContent = visibleOptions.toString();
+        }
+
+        if (noResults) {
+            noResults.hidden = visibleOptions > 0 || userOptions.length === 0;
+        }
     };
 
     openButton?.addEventListener('click', () => {
         initialSelection = captureSelection();
+        activeRoleFilter = 'all';
+        roleFilterButtons.forEach((button) => {
+            button.classList.toggle('is-active', button.dataset.auditUserRoleFilter === activeRoleFilter);
+        });
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        updateSelectionState();
+        filterOptions();
         auditUserModal.showModal();
         searchInput?.focus();
     });
@@ -66,15 +112,38 @@ if (auditUserModal) {
     closeButtons.forEach((button) => {
         button.addEventListener('click', () => {
             restoreSelection();
+            updateSelectionState();
+            filterOptions();
             auditUserModal.close();
         });
     });
 
     auditUserModal.addEventListener('cancel', () => {
         restoreSelection();
+        updateSelectionState();
+        filterOptions();
     });
 
     searchInput?.addEventListener('input', filterOptions);
+
+    roleFilterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            activeRoleFilter = button.dataset.auditUserRoleFilter;
+            roleFilterButtons.forEach((roleButton) => {
+                roleButton.classList.toggle('is-active', roleButton === button);
+            });
+            filterOptions();
+        });
+    });
+
+    userCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+            updateSelectionState();
+            if (activeRoleFilter === 'selected') {
+                filterOptions();
+            }
+        });
+    });
 
     checkAllButton?.addEventListener('click', () => {
         userOptions
@@ -82,13 +151,18 @@ if (auditUserModal) {
             .forEach((option) => {
                 option.querySelector('input').checked = true;
             });
+        updateSelectionState();
+        filterOptions();
     });
 
     clearButton?.addEventListener('click', () => {
-        userOptions
-            .filter((option) => ! option.hidden)
-            .forEach((option) => {
-                option.querySelector('input').checked = false;
-            });
+        userCheckboxes.forEach((checkbox) => {
+            checkbox.checked = false;
+        });
+        updateSelectionState();
+        filterOptions();
     });
+
+    updateSelectionState();
+    filterOptions();
 }
