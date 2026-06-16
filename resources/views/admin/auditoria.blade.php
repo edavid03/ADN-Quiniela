@@ -80,7 +80,9 @@
                                 <span>Filtro de usuarios</span>
                                 <h2 id="audit-user-modal-title">Elige que usuarios quieres ver</h2>
                             </div>
-                            <button type="button" class="audit-modal-close" data-audit-user-modal-close aria-label="Cerrar selector">Cerrar</button>
+                            <button type="button" class="audit-modal-close" data-audit-user-modal-close aria-label="Cerrar selector">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </header>
 
                         <div class="audit-user-modal-tools">
@@ -117,12 +119,20 @@
 
                         <div class="audit-user-picker" data-audit-user-list>
                             @forelse ($actors as $actor)
+                                @php
+                                    $actorInitials = collect(preg_split('/\s+/', trim($actor->actor_name)))
+                                        ->filter()
+                                        ->take(2)
+                                        ->map(fn ($part) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($part, 0, 1)))
+                                        ->join('');
+                                @endphp
                                 <label
                                     data-audit-user-option
                                     data-audit-user-role="{{ $actor->is_admin ? 'admin' : 'user' }}"
                                     data-audit-user-name="{{ \Illuminate\Support\Str::lower($actor->actor_name.' '.($actor->is_admin ? 'admin' : 'usuario')) }}"
                                 >
                                     <input type="checkbox" name="actor_ids[]" value="{{ $actor->actor_id }}" @checked($selectedActorIds->contains((int) $actor->actor_id))>
+                                    <span class="audit-user-avatar" aria-hidden="true">{{ $actorInitials ?: '?' }}</span>
                                     <span>
                                         <strong>{{ $actor->actor_name }}</strong>
                                         @if ($actor->is_admin)
