@@ -108,6 +108,24 @@ class RankingTest extends TestCase
             ->assertSee('Ver predicciones de Participante');
     }
 
+    public function test_logged_user_is_highlighted_in_rankings(): void
+    {
+        $viewer = User::factory()->create([
+            'name' => 'Usuario actual',
+            'username' => 'actual',
+        ]);
+        User::factory()->create([
+            'name' => 'Otro participante',
+            'username' => 'otro',
+        ]);
+
+        $this->actingAs($viewer)
+            ->get('/rankings')
+            ->assertOk()
+            ->assertSee('is-current-user', false)
+            ->assertSee('Tu lugar');
+    }
+
     public function test_guests_cannot_view_another_users_predictions(): void
     {
         $participant = User::factory()->create();

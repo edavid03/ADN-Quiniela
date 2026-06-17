@@ -22,10 +22,14 @@
             <div class="hidden text-right lg:block">Pron&oacute;sticos</div>
         </div>
 
+        @php($currentUserId = auth()->id())
+
         @forelse ($rankings as $index => $ranking)
-            <article class="grid grid-cols-[3rem_1fr_4.5rem] gap-2 border-t border-[var(--app-border)] px-4 py-4 sm:grid-cols-[4rem_1fr_5rem] sm:gap-3 sm:px-5 lg:grid-cols-[4rem_1fr_repeat(4,minmax(5.5rem,auto))]">
+            @php($isCurrentUser = (int) $ranking->id === (int) $currentUserId)
+
+            <article class="ranking-row {{ $isCurrentUser ? 'is-current-user' : '' }} grid grid-cols-[3rem_1fr_4.5rem] gap-2 border-t border-[var(--app-border)] px-4 py-4 sm:grid-cols-[4rem_1fr_5rem] sm:gap-3 sm:px-5 lg:grid-cols-[4rem_1fr_repeat(4,minmax(5.5rem,auto))]">
                 <div>
-                    <span class="grid h-9 w-9 place-items-center rounded-lg bg-[var(--app-primary)] font-extrabold text-white dark:text-[var(--app-bg)]">{{ $index + 1 }}</span>
+                    <span class="ranking-position grid h-9 w-9 place-items-center rounded-lg bg-[var(--app-primary)] font-extrabold text-white dark:text-[var(--app-bg)]">{{ $index + 1 }}</span>
                 </div>
                 <div class="min-w-0">
                     <a
@@ -36,6 +40,11 @@
                         <strong class="block truncate text-[var(--app-text)] transition-colors group-hover:text-[var(--app-primary)]">{{ $ranking->name }}</strong>
                         <span class="block truncate text-sm text-[var(--app-muted)] transition-colors group-hover:text-[var(--app-primary)]">{{ '@'.$ranking->username }}</span>
                     </a>
+                    @if ($isCurrentUser)
+                        <span class="mt-2 flex flex-wrap gap-1.5 text-[.65rem] font-extrabold uppercase text-[var(--app-muted)]">
+                            <span class="ranking-current-badge rounded px-2 py-1">Tu lugar</span>
+                        </span>
+                    @endif
                     <span class="mt-2 flex flex-wrap gap-1.5 text-[.65rem] font-extrabold uppercase text-[var(--app-muted)] lg:hidden">
                         <span class="rounded bg-[var(--app-panel-soft)] px-2 py-1">{{ (int) $ranking->exactos }} exactos</span>
                         <span class="rounded bg-[var(--app-panel-soft)] px-2 py-1">{{ (int) $ranking->pronosticos }} jugados</span>
