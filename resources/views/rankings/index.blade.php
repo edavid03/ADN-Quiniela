@@ -38,13 +38,13 @@
                         aria-label="Ver predicciones de {{ $ranking->name }}"
                     >
                         <strong class="block truncate text-[var(--app-text)] transition-colors group-hover:text-[var(--app-primary)]">{{ $ranking->name }}</strong>
-                        <span class="block truncate text-sm text-[var(--app-muted)] transition-colors group-hover:text-[var(--app-primary)]">{{ '@'.$ranking->username }}</span>
-                    </a>
-                    @if ($isCurrentUser)
-                        <span class="mt-2 flex flex-wrap gap-1.5 text-[.65rem] font-extrabold uppercase text-[var(--app-muted)]">
-                            <span class="ranking-current-badge rounded px-2 py-1">Tu lugar</span>
+                        <span class="flex min-w-0 items-center gap-2 text-sm text-[var(--app-muted)] transition-colors group-hover:text-[var(--app-primary)]">
+                            <span class="truncate">{{ '@'.$ranking->username }}</span>
+                            @if ($isCurrentUser)
+                                <span class="ranking-current-badge shrink-0 rounded px-1.5 py-0.5 text-[.6rem] font-extrabold uppercase">Tu lugar</span>
+                            @endif
                         </span>
-                    @endif
+                    </a>
                     <span class="mt-2 flex flex-wrap gap-1.5 text-[.65rem] font-extrabold uppercase text-[var(--app-muted)] lg:hidden">
                         <span class="rounded bg-[var(--app-panel-soft)] px-2 py-1">{{ (int) $ranking->exactos }} exactos</span>
                         <span class="rounded bg-[var(--app-panel-soft)] px-2 py-1">{{ (int) $ranking->pronosticos }} jugados</span>
