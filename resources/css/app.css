@@ -400,6 +400,27 @@
         border-top: 0;
     }
 
+    .ranking-row {
+        position: relative;
+        transition: background-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .ranking-row.is-current-user {
+        background:
+            linear-gradient(90deg, color-mix(in srgb, var(--app-accent-2) 26%, transparent), transparent 58%),
+            color-mix(in srgb, var(--app-accent-2) 10%, var(--app-panel));
+        box-shadow: inset .28rem 0 0 color-mix(in srgb, var(--app-accent-2) 62%, var(--app-border));
+    }
+
+    .ranking-row.is-current-user .ranking-position {
+        background: color-mix(in srgb, var(--app-accent-2) 72%, var(--app-primary));
+    }
+
+    .ranking-current-badge {
+        background: color-mix(in srgb, var(--app-accent-2) 22%, var(--app-panel-strong));
+        color: var(--app-primary);
+    }
+
     .score-input {
         width: 4.8rem;
         border-radius: .5rem;
