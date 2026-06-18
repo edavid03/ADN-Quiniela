@@ -43,7 +43,7 @@ class RankingController extends Controller
         $partidos = Partido::query()
             ->with(['local', 'visitante'])
             ->cerradosParaPronosticos()
-            ->orderBy('fecha_utc')
+            ->orderByDesc('fecha_utc')
             ->get();
 
         return view('rankings.predicciones', [

@@ -163,6 +163,21 @@ class RankingTest extends TestCase
             ->assertSee('2 - 1');
     }
 
+    public function test_closed_matches_are_ordered_from_newest_to_oldest(): void
+    {
+        Carbon::setTestNow('2026-06-07 12:00:00');
+
+        $viewer = User::factory()->create();
+        $participant = User::factory()->create();
+        $this->crearPartidoConFecha(now()->utc()->addMinutes(20));
+        $this->crearPartidoConFecha(now()->utc()->addMinutes(40), 3, 4);
+
+        $this->actingAs($viewer)
+            ->get(route('rankings.predicciones.show', $participant))
+            ->assertOk()
+            ->assertSeeInOrder(['Local 3 FC', 'Local 1 FC']);
+    }
+
     public function test_users_can_view_their_own_predictions_profile(): void
     {
         $user = User::factory()->create([
