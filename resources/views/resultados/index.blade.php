@@ -7,7 +7,7 @@
         <div>
             <span class="kicker">Marcadores</span>
             <h1 class="page-title">Resultados de partidos</h1>
-            <p class="page-copy">Consulta todos los partidos cargados y los marcadores oficiales cuando el administrador los registre.</p>
+            <p class="page-copy">Consulta los partidos disputados y los programados durante las proximas 24 horas.</p>
         </div>
         <div class="page-actions">
             <a href="{{ route('dashboard') }}" class="btn btn-secondary px-3 sm:px-4">Volver a mesa</a>
@@ -18,7 +18,7 @@
     <section class="surface overflow-hidden">
         <div class="grid grid-cols-1 items-center gap-3 border-b border-[var(--app-border)] px-4 py-4 sm:grid-cols-[1fr_auto] sm:px-5">
             <div>
-                <span class="kicker">Calendario completo</span>
+                <span class="kicker">Hasta las proximas 24 horas</span>
                 <h2 class="font-display text-xl font-black">Partidos y resultados</h2>
             </div>
             <span class="w-fit rounded-lg bg-[var(--app-panel-soft)] px-3 py-2 text-sm font-extrabold text-[var(--app-muted)]">{{ $partidos->count() }} partidos</span>

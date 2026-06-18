@@ -14,7 +14,8 @@ class ResultadoController extends Controller
         return view('resultados.index', [
             'partidos' => Partido::query()
                 ->with(['local', 'visitante'])
-                ->orderBy('fecha_utc')
+                ->where('fecha_utc', '<=', now()->utc()->addHours(24))
+                ->orderByDesc('fecha_utc')
                 ->get(),
             'predicciones' => Prediccion::query()
                 ->where('usuario_id', $request->user()->id)

@@ -6,6 +6,7 @@ use App\Models\Equipo;
 use App\Models\Partido;
 use App\Models\Prediccion;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,7 +33,7 @@ class ResultadoTest extends TestCase
         $partidoFinalizado = Partido::create([
             'local_id' => $local->id,
             'visitante_id' => $visitante->id,
-            'fecha_utc' => now()->utc()->addDay()->format('Y-m-d H:i:s'),
+            'fecha_utc' => now()->utc()->addHour()->format('Y-m-d H:i:s'),
             'estadio' => 'Estadio Final',
             'fase' => 'Grupos',
             'goles_local' => 2,
@@ -42,7 +43,7 @@ class ResultadoTest extends TestCase
         $partidoPendiente = Partido::create([
             'local_id' => $visitante->id,
             'visitante_id' => $local->id,
-            'fecha_utc' => now()->utc()->addDays(2)->format('Y-m-d H:i:s'),
+            'fecha_utc' => now()->utc()->addHours(2)->format('Y-m-d H:i:s'),
             'estadio' => 'Estadio Pendiente',
             'fase' => 'Grupos',
             'goles_local' => null,
@@ -51,7 +52,7 @@ class ResultadoTest extends TestCase
         $partidoNoAcertado = Partido::create([
             'local_id' => $local->id,
             'visitante_id' => $visitante->id,
-            'fecha_utc' => now()->utc()->addDays(3)->format('Y-m-d H:i:s'),
+            'fecha_utc' => now()->utc()->addHours(3)->format('Y-m-d H:i:s'),
             'estadio' => 'Estadio No Acertado',
             'fase' => 'Grupos',
             'goles_local' => 1,
@@ -130,5 +131,58 @@ class ResultadoTest extends TestCase
             ->assertSee('hora de Caracas')
             ->assertDontSee('11/06/2026 20:30')
             ->assertDontSee('12/06/2026 00:30 UTC');
+    }
+
+    public function test_matches_are_sorted_descending_and_limited_to_the_next_24_hours(): void
+    {
+        Carbon::setTestNow('2026-06-18 12:00:00');
+
+        $user = User::factory()->create();
+        $local = Equipo::create([
+            'id' => 1,
+            'name' => 'Local FC',
+            'code' => 'LOC',
+            'grupo' => 'A',
+        ]);
+        $visitante = Equipo::create([
+            'id' => 2,
+            'name' => 'Visitante FC',
+            'code' => 'VIS',
+            'grupo' => 'A',
+        ]);
+
+        $partidoAnterior = Partido::create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => now()->utc()->subHour(),
+            'estadio' => 'Estadio Anterior',
+            'fase' => 'Grupos',
+        ]);
+        $partidoEnElLimite = Partido::create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => now()->utc()->addHours(24),
+            'estadio' => 'Estadio Limite',
+            'fase' => 'Grupos',
+        ]);
+        Partido::create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => now()->utc()->addHours(24)->addSecond(),
+            'estadio' => 'Estadio Fuera Del Limite',
+            'fase' => 'Grupos',
+        ]);
+
+        $response = $this->actingAs($user)->get('/resultados');
+
+        $response
+            ->assertOk()
+            ->assertSeeInOrder(['Estadio Limite', 'Estadio Anterior'])
+            ->assertDontSee('Estadio Fuera Del Limite');
+
+        $this->assertSame(
+            [$partidoEnElLimite->id, $partidoAnterior->id],
+            $response->viewData('partidos')->pluck('id')->all()
+        );
     }
 }
