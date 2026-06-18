@@ -5,6 +5,13 @@
 @section('content')
     <form method="POST" action="{{ route('admin.resultados.update') }}">
         @csrf
+        @php
+            $partidosVisibles = $partidos->filter(fn ($partido) => $partido->fecha_utc
+                ->copy()
+                ->utc()
+                ->addHours(14)
+                ->greaterThanOrEqualTo(now()->utc()));
+        @endphp
 
         <section class="page-header">
             <div>
@@ -15,7 +22,7 @@
             <div class="page-actions">
                 <a href="{{ route('admin.auditoria.index') }}" class="btn btn-secondary">Ver auditor&iacute;a</a>
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">Volver</a>
-                @if ($partidos->isNotEmpty())
+                @if ($partidosVisibles->isNotEmpty())
                     <button class="btn btn-primary" type="submit">Guardar resultados</button>
                 @endif
             </div>
@@ -32,7 +39,7 @@
         @endif
 
         <section class="overflow-hidden rounded-xl border border-[var(--app-border)] bg-[var(--app-panel)]">
-            @forelse ($partidos as $partido)
+            @forelse ($partidosVisibles as $partido)
                 <article class="grid gap-4 border-b border-[var(--app-border)] px-4 py-4 last:border-b-0 sm:px-5 lg:grid-cols-[1fr_auto] lg:items-center">
                     <div>
                         <div class="team-versus">
