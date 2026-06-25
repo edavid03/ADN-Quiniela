@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Session\TokenMismatchException;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -114,6 +116,24 @@ class AuthTest extends TestCase
         ])->assertRedirect('/dashboard');
 
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_expired_login_token_redirects_back_to_login_with_message(): void
+    {
+        Route::post('/csrf-expired-test', function (): void {
+            throw new TokenMismatchException;
+        });
+
+        $this->from('/login')
+            ->post('/csrf-expired-test', [
+                'username' => 'usuario_prueba',
+                'password' => 'clave-segura',
+                '_token' => 'token-vencido',
+            ])
+            ->assertRedirect('/login')
+            ->assertSessionHasErrors('session')
+            ->assertSessionHasInput('username', 'usuario_prueba')
+            ->assertSessionMissing('_old_input.password');
     }
 
     public function test_authenticated_users_can_view_dashboard(): void

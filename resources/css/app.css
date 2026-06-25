@@ -146,12 +146,26 @@
     @keyframes page-fade-in {
         from {
             opacity: 0;
-            transform: translateY(.45rem);
+            transform: translateY(.55rem) scale(.996);
         }
 
         to {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    @keyframes loading-ball-roll {
+        0% {
+            transform: translateX(-.8rem) rotate(0deg);
+        }
+
+        50% {
+            transform: translateX(.8rem) rotate(180deg);
+        }
+
+        100% {
+            transform: translateX(-.8rem) rotate(360deg);
         }
     }
 
@@ -162,6 +176,7 @@
             animation-duration: .01ms !important;
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
         }
     }
 }
@@ -173,8 +188,72 @@
     }
 
     .page-fade {
-        animation: page-fade-in 360ms ease-out both;
+        animation: page-fade-in 320ms cubic-bezier(.2, .8, .2, 1) both;
+        transition: opacity 180ms ease, transform 180ms ease, filter 180ms ease;
         will-change: opacity, transform;
+    }
+
+    .is-leaving .page-fade {
+        opacity: .25;
+        transform: translateY(-.35rem) scale(.998);
+        filter: blur(1px);
+    }
+
+    .app-loading-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        background:
+            linear-gradient(116deg, color-mix(in srgb, var(--app-secondary) 14%, transparent) 0 13%, transparent 13% 100%),
+            color-mix(in srgb, var(--app-bg) 76%, transparent);
+        backdrop-filter: blur(8px);
+        transition: opacity 180ms ease, visibility 180ms ease;
+    }
+
+    .is-loading .app-loading-screen {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .app-loading-panel {
+        display: inline-flex;
+        align-items: center;
+        gap: .8rem;
+        border: 1px solid var(--app-border);
+        border-radius: .65rem;
+        background: color-mix(in srgb, var(--app-panel-strong) 94%, transparent);
+        padding: .9rem 1rem;
+        box-shadow: 0 18px 50px rgba(18, 11, 36, .16);
+        color: var(--app-text);
+        font-family: var(--font-display);
+        font-size: .78rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .app-loading-ball {
+        position: relative;
+        width: 1.55rem;
+        height: 1.55rem;
+        flex: 0 0 auto;
+        border: .22rem solid var(--app-primary);
+        border-radius: 50%;
+        background:
+            linear-gradient(90deg, transparent 44%, var(--app-primary) 44% 56%, transparent 56%),
+            linear-gradient(0deg, transparent 44%, var(--app-primary) 44% 56%, transparent 56%),
+            var(--app-panel-strong);
+        box-shadow: inset 0 0 0 .18rem var(--app-panel-strong), 0 0 0 .15rem color-mix(in srgb, var(--app-accent-2) 22%, transparent);
+        animation: loading-ball-roll 900ms ease-in-out infinite;
+    }
+
+    .app-loading-copy {
+        white-space: nowrap;
     }
 
     .font-display {

@@ -74,8 +74,15 @@
             </nav>
         @endauth
 
-        <main class="page-fade @auth app-shell pb-28 pt-5 lg:py-8 @else grid min-h-screen place-items-center px-3 py-5 sm:px-4 sm:py-10 @endauth">
+        <main id="app-page" class="page-fade @auth app-shell pb-28 pt-5 lg:py-8 @else grid min-h-screen place-items-center px-3 py-5 sm:px-4 sm:py-10 @endauth">
             @yield('content')
         </main>
+
+        <div class="app-loading-screen" data-loading-screen aria-hidden="true">
+            <div class="app-loading-panel" role="status" aria-live="polite">
+                <span class="app-loading-ball" aria-hidden="true"></span>
+                <span class="app-loading-copy">Cargando jugada</span>
+            </div>
+        </div>
     </body>
 </html>
