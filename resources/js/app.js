@@ -13,6 +13,56 @@ const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
 
 applyTheme(storedTheme ?? preferredTheme);
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const transitionDelay = prefersReducedMotion ? 0 : 140;
+let navigationStarted = false;
+
+const showLoadingState = () => {
+    if (navigationStarted) {
+        return;
+    }
+
+    navigationStarted = true;
+    document.documentElement.classList.add('is-leaving', 'is-loading');
+    document.querySelector('[data-loading-screen]')?.setAttribute('aria-hidden', 'false');
+};
+
+const hideLoadingState = () => {
+    navigationStarted = false;
+    document.documentElement.classList.remove('is-leaving', 'is-loading');
+    document.querySelector('[data-loading-screen]')?.setAttribute('aria-hidden', 'true');
+};
+
+const shouldAnimateLink = (link, event) => {
+    if (! link || event.defaultPrevented || event.button !== 0) {
+        return false;
+    }
+
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return false;
+    }
+
+    if (link.target && link.target !== '_self') {
+        return false;
+    }
+
+    if (link.hasAttribute('download')) {
+        return false;
+    }
+
+    const destination = new URL(link.href, window.location.href);
+
+    if (destination.origin !== window.location.origin) {
+        return false;
+    }
+
+    if (destination.pathname === window.location.pathname && destination.search === window.location.search && destination.hash) {
+        return false;
+    }
+
+    return destination.href !== window.location.href;
+};
+
 document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-theme-toggle]');
 
@@ -25,144 +75,29 @@ document.addEventListener('click', (event) => {
     applyTheme(nextTheme);
 });
 
-const auditUserModal = document.querySelector('[data-audit-user-modal]');
+document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
 
-if (auditUserModal) {
-    const openButton = document.querySelector('[data-audit-user-modal-open]');
-    const closeButtons = auditUserModal.querySelectorAll('[data-audit-user-modal-close]');
-    const searchInput = auditUserModal.querySelector('[data-audit-user-search]');
-    const userOptions = [...auditUserModal.querySelectorAll('[data-audit-user-option]')];
-    const userCheckboxes = [...auditUserModal.querySelectorAll('input[name="actor_ids[]"]')];
-    const checkAllButton = auditUserModal.querySelector('[data-audit-user-check-all]');
-    const clearButton = auditUserModal.querySelector('[data-audit-user-clear]');
-    const roleFilterButtons = [...auditUserModal.querySelectorAll('[data-audit-user-role-filter]')];
-    const selectedCount = auditUserModal.querySelector('[data-audit-user-selected-count]');
-    const visibleCount = auditUserModal.querySelector('[data-audit-user-visible-count]');
-    const selectionText = auditUserModal.querySelector('[data-audit-user-selection-text]');
-    const noResults = auditUserModal.querySelector('[data-audit-user-no-results]');
-    let initialSelection = new Set();
-    let activeRoleFilter = 'all';
+    if (! shouldAnimateLink(link, event)) {
+        return;
+    }
 
-    const captureSelection = () => new Set(
-        userCheckboxes
-            .filter((checkbox) => checkbox.checked)
-            .map((checkbox) => checkbox.value),
-    );
+    event.preventDefault();
+    showLoadingState();
 
-    const restoreSelection = () => {
-        userCheckboxes.forEach((checkbox) => {
-            checkbox.checked = initialSelection.has(checkbox.value);
-        });
-    };
+    window.setTimeout(() => {
+        window.location.href = link.href;
+    }, transitionDelay);
+});
 
-    const updateSelectionState = () => {
-        const checkedCount = userCheckboxes.filter((checkbox) => checkbox.checked).length;
+document.addEventListener('submit', (event) => {
+    const form = event.target;
 
-        if (selectedCount) {
-            selectedCount.textContent = checkedCount.toString();
-        }
+    if (! form.matches('form')) {
+        return;
+    }
 
-        if (selectionText) {
-            selectionText.textContent = checkedCount === 0
-                ? 'Sin usuarios marcados: se mostraran todos los eventos.'
-                : `Se mostraran eventos de ${checkedCount} usuario${checkedCount === 1 ? '' : 's'} marcado${checkedCount === 1 ? '' : 's'}.`;
-        }
-    };
+    showLoadingState();
+});
 
-    const filterOptions = () => {
-        const query = (searchInput?.value ?? '').trim().toLocaleLowerCase();
-        let visibleOptions = 0;
-
-        userOptions.forEach((option) => {
-            const checkbox = option.querySelector('input');
-            const matchesQuery = query === '' || option.dataset.auditUserName.includes(query);
-            const matchesRole = activeRoleFilter === 'all'
-                || option.dataset.auditUserRole === activeRoleFilter
-                || (activeRoleFilter === 'selected' && checkbox.checked);
-            const isVisible = matchesQuery && matchesRole;
-
-            option.hidden = ! isVisible;
-            visibleOptions += isVisible ? 1 : 0;
-        });
-
-        if (visibleCount) {
-            visibleCount.textContent = visibleOptions.toString();
-        }
-
-        if (noResults) {
-            noResults.hidden = visibleOptions > 0 || userOptions.length === 0;
-        }
-    };
-
-    openButton?.addEventListener('click', () => {
-        initialSelection = captureSelection();
-        activeRoleFilter = 'all';
-        roleFilterButtons.forEach((button) => {
-            button.classList.toggle('is-active', button.dataset.auditUserRoleFilter === activeRoleFilter);
-        });
-        if (searchInput) {
-            searchInput.value = '';
-        }
-        updateSelectionState();
-        filterOptions();
-        auditUserModal.showModal();
-        searchInput?.focus();
-    });
-
-    closeButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            restoreSelection();
-            updateSelectionState();
-            filterOptions();
-            auditUserModal.close();
-        });
-    });
-
-    auditUserModal.addEventListener('cancel', () => {
-        restoreSelection();
-        updateSelectionState();
-        filterOptions();
-    });
-
-    searchInput?.addEventListener('input', filterOptions);
-
-    roleFilterButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            activeRoleFilter = button.dataset.auditUserRoleFilter;
-            roleFilterButtons.forEach((roleButton) => {
-                roleButton.classList.toggle('is-active', roleButton === button);
-            });
-            filterOptions();
-        });
-    });
-
-    userCheckboxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', () => {
-            updateSelectionState();
-            if (activeRoleFilter === 'selected') {
-                filterOptions();
-            }
-        });
-    });
-
-    checkAllButton?.addEventListener('click', () => {
-        userOptions
-            .filter((option) => ! option.hidden)
-            .forEach((option) => {
-                option.querySelector('input').checked = true;
-            });
-        updateSelectionState();
-        filterOptions();
-    });
-
-    clearButton?.addEventListener('click', () => {
-        userCheckboxes.forEach((checkbox) => {
-            checkbox.checked = false;
-        });
-        updateSelectionState();
-        filterOptions();
-    });
-
-    updateSelectionState();
-    filterOptions();
-}
+window.addEventListener('pageshow', hideLoadingState);
