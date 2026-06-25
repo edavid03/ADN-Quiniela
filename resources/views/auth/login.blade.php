@@ -58,7 +58,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('login.store') }}" class="grid gap-5">
+                    <form method="POST" action="{{ route('login.store') }}" class="grid gap-5" data-auth-loading>
                         @csrf
 
                         <label class="grid gap-2 text-sm font-extrabold text-[var(--app-text)]" for="username">
