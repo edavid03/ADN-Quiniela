@@ -21,7 +21,10 @@
             <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>
+                <a class="btn btn-secondary" href="{{ route('admin.partidos.index') }}">Gestionar partidos</a>
                 <a class="btn btn-secondary" href="{{ route('admin.usuarios.index') }}">Gestionar usuarios</a>
+            @else
+                <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
             @endif
         </div>
     </section>
