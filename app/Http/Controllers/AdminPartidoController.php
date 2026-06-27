@@ -24,6 +24,7 @@ class AdminPartidoController extends Controller
             'partidos' => Partido::query()
                 ->with(['local', 'visitante'])
                 ->withCount('predicciones')
+                ->where('fecha_utc', '>', now()->utc())
                 ->orderBy('fecha_utc')
                 ->get(),
             'minimumCaracasDateTime' => now(self::CARACAS_TIMEZONE)->addMinute()->format('Y-m-d\TH:i'),
