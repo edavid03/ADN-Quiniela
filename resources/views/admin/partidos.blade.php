@@ -85,9 +85,8 @@
 
             @forelse ($partidos as $partido)
                 @php
-                    $isFuture = $partido->fecha_utc->copy()->utc()->greaterThan(now()->utc());
                     $hasPredictions = $partido->predicciones_count > 0;
-                    $canEdit = $isFuture && ! $hasPredictions;
+                    $canEdit = ! $hasPredictions;
                     $fechaCaracasValue = $partido->fechaCaracas()->format('Y-m-d\TH:i');
                 @endphp
 
@@ -115,69 +114,66 @@
                             </div>
                         </div>
 
-                        <span class="match-admin-badge {{ $canEdit ? 'is-open' : 'is-locked' }}">
-                            @if ($canEdit)
-                                Editable
-                            @elseif (! $isFuture)
-                                Fecha cerrada
-                            @else
-                                {{ $partido->predicciones_count }} pron&oacute;sticos
-                            @endif
-                        </span>
+                        @unless ($canEdit)
+                            <span class="match-admin-badge is-locked">{{ $partido->predicciones_count }} pron&oacute;sticos</span>
+                        @endunless
                     </div>
 
                     @if ($canEdit)
-                        <form method="POST" action="{{ route('admin.partidos.update', $partido) }}" class="match-admin-form mt-4">
-                            @csrf
-                            @method('PATCH')
+                        <details class="match-admin-editor mt-4">
+                            <summary>
+                                <span class="match-admin-badge is-open">Editable</span>
+                                <span class="match-admin-summary-copy">Abrir edici&oacute;n</span>
+                            </summary>
 
-                            <label>
-                                <span>Local</span>
-                                <select name="local_id" required>
-                                    @foreach ($equipos as $equipo)
-                                        <option value="{{ $equipo->id }}" @selected((int) old("partidos.{$partido->id}.local_id", $partido->local_id) === (int) $equipo->id)>Grupo {{ $equipo->grupo }} - {{ $equipo->name }}</option>
-                                    @endforeach
-                                </select>
-                            </label>
+                            <form method="POST" action="{{ route('admin.partidos.update', $partido) }}" class="match-admin-form mt-4">
+                                @csrf
+                                @method('PATCH')
 
-                            <label>
-                                <span>Visitante</span>
-                                <select name="visitante_id" required>
-                                    @foreach ($equipos as $equipo)
-                                        <option value="{{ $equipo->id }}" @selected((int) old("partidos.{$partido->id}.visitante_id", $partido->visitante_id) === (int) $equipo->id)>Grupo {{ $equipo->grupo }} - {{ $equipo->name }}</option>
-                                    @endforeach
-                                </select>
-                            </label>
+                                <label>
+                                    <span>Local</span>
+                                    <select name="local_id" required>
+                                        @foreach ($equipos as $equipo)
+                                            <option value="{{ $equipo->id }}" @selected((int) old("partidos.{$partido->id}.local_id", $partido->local_id) === (int) $equipo->id)>Grupo {{ $equipo->grupo }} - {{ $equipo->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
 
-                            <label>
-                                <span>Fecha y hora Caracas</span>
-                                <input name="fecha_caracas" type="datetime-local" min="{{ $minimumCaracasDateTime }}" value="{{ old("partidos.{$partido->id}.fecha_caracas", $fechaCaracasValue) }}" required>
-                            </label>
+                                <label>
+                                    <span>Visitante</span>
+                                    <select name="visitante_id" required>
+                                        @foreach ($equipos as $equipo)
+                                            <option value="{{ $equipo->id }}" @selected((int) old("partidos.{$partido->id}.visitante_id", $partido->visitante_id) === (int) $equipo->id)>Grupo {{ $equipo->grupo }} - {{ $equipo->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
 
-                            <label>
-                                <span>Fase</span>
-                                <input name="fase" type="text" maxlength="30" value="{{ old("partidos.{$partido->id}.fase", $partido->fase) }}" required>
-                            </label>
+                                <label>
+                                    <span>Fecha y hora Caracas</span>
+                                    <input name="fecha_caracas" type="datetime-local" min="{{ $minimumCaracasDateTime }}" value="{{ old("partidos.{$partido->id}.fecha_caracas", $fechaCaracasValue) }}" required>
+                                </label>
 
-                            <label class="sm:col-span-2">
-                                <span>Estadio</span>
-                                <input name="estadio" type="text" maxlength="255" value="{{ old("partidos.{$partido->id}.estadio", $partido->estadio) }}" placeholder="Opcional">
-                            </label>
+                                <label>
+                                    <span>Fase</span>
+                                    <input name="fase" type="text" maxlength="30" value="{{ old("partidos.{$partido->id}.fase", $partido->fase) }}" required>
+                                </label>
 
-                            <button type="submit" class="btn btn-primary sm:col-span-2">Guardar cambios</button>
-                        </form>
+                                <label class="sm:col-span-2">
+                                    <span>Estadio</span>
+                                    <input name="estadio" type="text" maxlength="255" value="{{ old("partidos.{$partido->id}.estadio", $partido->estadio) }}" placeholder="Opcional">
+                                </label>
+
+                                <button type="submit" class="btn btn-primary sm:col-span-2">Guardar cambios</button>
+                            </form>
+                        </details>
                     @else
                         <p class="mt-3 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-3 py-2 text-sm font-bold text-[var(--app-muted)]">
-                            @if (! $isFuture)
-                                Este partido no se puede editar porque su fecha ya no es posterior al tiempo real.
-                            @else
-                                Este partido no se puede editar porque ya tiene pron&oacute;sticos registrados.
-                            @endif
+                            Este partido no se puede editar porque ya tiene pron&oacute;sticos registrados.
                         </p>
                     @endif
                 </article>
             @empty
-                <p class="px-5 py-6 font-semibold text-[var(--app-muted)]">Todav&iacute;a no hay partidos cargados.</p>
+                <p class="px-5 py-6 font-semibold text-[var(--app-muted)]">No hay partidos futuros disponibles para editar.</p>
             @endforelse
         </section>
     </div>

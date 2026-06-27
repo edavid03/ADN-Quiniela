@@ -27,12 +27,51 @@ class AdminPartidoTest extends TestCase
     public function test_admin_can_view_match_management(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
-        $this->crearEquipos();
+        [$local, $visitante] = $this->crearEquipos();
+        $this->crearPartido($local, $visitante);
 
         $this->actingAs($admin)
             ->get('/admin/partidos')
             ->assertOk()
-            ->assertSee('Partidos de la quiniela');
+            ->assertSee('Partidos de la quiniela')
+            ->assertSee('Abrir edici&oacute;n', false);
+    }
+
+    public function test_admin_match_management_only_lists_future_matches(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-06-27 12:00:00', 'UTC'));
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        [$local, $visitante] = $this->crearEquipos();
+
+        Partido::query()->create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => '2026-06-27 11:59:00',
+            'estadio' => 'Estadio Cerrado',
+            'fase' => 'Grupos',
+            'goles_local' => null,
+            'goles_visitante' => null,
+        ]);
+
+        Partido::query()->create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => '2026-06-27 12:01:00',
+            'estadio' => 'Estadio Futuro',
+            'fase' => 'Grupos',
+            'goles_local' => null,
+            'goles_visitante' => null,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/partidos')
+            ->assertOk()
+            ->assertSee('Estadio Futuro')
+            ->assertDontSee('Estadio Cerrado')
+            ->assertDontSee('Fecha cerrada');
+
+        Carbon::setTestNow();
     }
 
     public function test_admin_can_create_future_match_entering_caracas_time_saved_as_utc(): void
