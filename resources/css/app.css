@@ -130,6 +130,8 @@
     input[type="email"],
     input[type="password"],
     input[type="number"],
+    input[type="datetime-local"],
+    select,
     textarea {
         border: 1px solid var(--app-border);
         background: var(--app-panel-strong);
@@ -137,6 +139,7 @@
     }
 
     input:focus,
+    select:focus,
     textarea:focus {
         outline: none;
         border-color: var(--app-accent-2);
@@ -411,6 +414,58 @@
         font-family: var(--font-display);
         font-size: 1.1rem;
         font-weight: 900;
+    }
+
+    .match-admin-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .match-admin-form label {
+        display: grid;
+        gap: .45rem;
+        min-width: 0;
+        color: var(--app-text);
+        font-size: .82rem;
+        font-weight: 900;
+    }
+
+    .match-admin-form label > span {
+        color: var(--app-muted);
+        font-size: .68rem;
+        text-transform: uppercase;
+    }
+
+    .match-admin-form input,
+    .match-admin-form select {
+        width: 100%;
+        min-width: 0;
+        border-radius: .5rem;
+        padding: .78rem .85rem;
+        font-weight: 750;
+    }
+
+    .match-admin-badge {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: .42rem .7rem;
+        font-size: .68rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .match-admin-badge.is-open {
+        background: color-mix(in srgb, var(--app-success) 14%, var(--app-panel-strong));
+        color: var(--app-success);
+    }
+
+    .match-admin-badge.is-locked {
+        background: color-mix(in srgb, var(--app-secondary) 14%, var(--app-panel-strong));
+        color: var(--app-secondary);
     }
 
     .btn:hover {
@@ -1713,6 +1768,10 @@
     @media (min-width: 640px) {
         .app-shell {
             width: min(1240px, calc(100% - 3rem));
+        }
+
+        .match-admin-form {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .page-actions {

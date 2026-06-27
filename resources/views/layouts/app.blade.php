@@ -45,6 +45,7 @@
                         <a href="{{ route('reglas.index') }}" class="btn btn-secondary {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Reglas</a>
                         @if (auth()->user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.dashboard', 'admin.resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
+                            <a href="{{ route('admin.partidos.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.partidos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Partidos</a>
                             <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.usuarios.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Usuarios</a>
                             <a href="{{ route('admin.auditoria.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.auditoria.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Auditor&iacute;a</a>
                         @endif
@@ -62,14 +63,18 @@
             </header>
 
             <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--app-border)] bg-[var(--app-panel)]/94 px-2 pb-[calc(.6rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(18,11,36,.14)] backdrop-blur-xl lg:hidden" aria-label="Navegacion principal">
-                <div class="mx-auto grid max-w-xl {{ auth()->user()->is_admin ? 'grid-cols-4' : 'grid-cols-5' }} gap-2">
+                <div class="mx-auto grid max-w-xl grid-cols-5 gap-2">
                     <a href="{{ route('dashboard') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('dashboard') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Mesa</a>
                     @unless (auth()->user()->is_admin)
                         <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Predicciones</a>
                     @endunless
                     <a href="{{ route('resultados.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Resultados</a>
                     <a href="{{ route('rankings.index') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Ranking</a>
-                    <a href="{{ route('reglas.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Reglas</a>
+                    @if (auth()->user()->is_admin)
+                        <a href="{{ route('admin.partidos.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('admin.partidos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Partidos</a>
+                    @else
+                        <a href="{{ route('reglas.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Reglas</a>
+                    @endif
                 </div>
             </nav>
         @endauth

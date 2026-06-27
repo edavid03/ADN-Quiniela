@@ -20,6 +20,7 @@
                 <p class="page-copy">Solo el administrador puede cargar o actualizar resultados. Al guardar, se recalculan los puntos de los pron&oacute;sticos.</p>
             </div>
             <div class="page-actions">
+                <a href="{{ route('admin.partidos.index') }}" class="btn btn-secondary">Gestionar partidos</a>
                 <a href="{{ route('admin.auditoria.index') }}" class="btn btn-secondary">Ver auditor&iacute;a</a>
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">Volver</a>
                 @if ($partidosVisibles->isNotEmpty())
