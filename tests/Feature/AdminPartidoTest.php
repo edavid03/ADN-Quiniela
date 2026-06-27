@@ -74,6 +74,53 @@ class AdminPartidoTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_admin_match_management_does_not_list_matches_with_predictions(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-06-27 12:00:00', 'UTC'));
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+        [$local, $visitante] = $this->crearEquipos();
+
+        $partidoConPronostico = Partido::query()->create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => '2026-06-28 12:00:00',
+            'estadio' => 'Estadio Con Pronostico',
+            'fase' => 'Grupos',
+            'goles_local' => null,
+            'goles_visitante' => null,
+        ]);
+
+        Prediccion::query()->create([
+            'usuario_id' => $user->id,
+            'partido_id' => $partidoConPronostico->id,
+            'goles_local' => 1,
+            'goles_visitante' => 0,
+            'acertado' => false,
+            'puntos' => null,
+        ]);
+
+        Partido::query()->create([
+            'local_id' => $local->id,
+            'visitante_id' => $visitante->id,
+            'fecha_utc' => '2026-06-28 16:00:00',
+            'estadio' => 'Estadio Sin Pronostico',
+            'fase' => 'Grupos',
+            'goles_local' => null,
+            'goles_visitante' => null,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/partidos')
+            ->assertOk()
+            ->assertSee('Estadio Sin Pronostico')
+            ->assertDontSee('Estadio Con Pronostico')
+            ->assertDontSee('pron&oacute;sticos', false);
+
+        Carbon::setTestNow();
+    }
+
     public function test_admin_can_create_future_match_entering_caracas_time_saved_as_utc(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-06-27 12:00:00', 'UTC'));

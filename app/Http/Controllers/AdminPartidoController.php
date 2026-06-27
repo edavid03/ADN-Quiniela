@@ -23,7 +23,7 @@ class AdminPartidoController extends Controller
                 ->get(),
             'partidos' => Partido::query()
                 ->with(['local', 'visitante'])
-                ->withCount('predicciones')
+                ->whereDoesntHave('predicciones')
                 ->where('fecha_utc', '>', now()->utc())
                 ->orderBy('fecha_utc')
                 ->get(),
