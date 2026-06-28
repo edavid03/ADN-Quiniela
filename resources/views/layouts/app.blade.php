@@ -53,7 +53,7 @@
 
                     <div class="flex min-w-0 items-center gap-1.5 text-xs md:flex-wrap md:gap-2 md:text-sm">
                         <span class="hidden max-w-40 truncate rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-3 py-2 font-bold text-[var(--app-muted)] sm:block xl:max-w-56">{{ auth()->user()->name }}</span>
-                        <button type="button" data-theme-toggle class="btn btn-secondary hidden lg:inline-flex">Tema</button>
+                        <button type="button" data-theme-toggle class="btn btn-secondary hidden lg:inline-flex" aria-label="Cambiar tema" title="Cambiar tema">&#9728; / &#9790;</button>
                         <form method="POST" action="{{ route('logout') }}" data-auth-loading>
                             @csrf
                             <button type="submit" class="btn btn-secondary min-h-0 px-2.5 py-1.5 text-xs md:min-h-11 md:px-4 md:py-2.5 md:text-sm">Salir</button>
