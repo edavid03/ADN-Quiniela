@@ -20,7 +20,8 @@ class ReglaTest extends TestCase
             ->assertSee('Reglas de la quiniela')
             ->assertSee('Marcador exacto: 3 puntos')
             ->assertSee('Resultado correcto: 1 punto')
-            ->assertSee('Sin acierto: 0 puntos');
+            ->assertSee('Sin acierto: 0 puntos')
+            ->assertSee('No cuenta la prorroga ni la tanda de penaltis');
     }
 
     public function test_rules_page_does_not_require_a_rules_database_table(): void
