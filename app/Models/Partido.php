@@ -11,7 +11,7 @@ class Partido extends Model
 {
     use Auditable;
 
-    public const MINUTOS_ANTICIPACION_PRONOSTICO = 1;
+    public const MINUTOS_ANTICIPACION_PRONOSTICO = 60;
 
     protected $table = 'partidos';
     protected $primaryKey = 'id';
