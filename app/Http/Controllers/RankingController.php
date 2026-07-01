@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Partido;
 use App\Models\Prediccion;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -13,16 +12,8 @@ class RankingController extends Controller
 {
     public function index(): View
     {
-        return view('rankings.index', [
-            'rankings' => self::rankingQuery()->get(),
-        ]);
-    }
-
-    public static function rankingQuery(): Builder
-    {
-        return User::query()
+        $rankings = User::query()
             ->where('users.is_admin', false)
-            ->whereNotNull('users.approved_at')
             ->leftJoin('predicciones', 'users.id', '=', 'predicciones.usuario_id')
             ->select([
                 'users.id',
@@ -37,7 +28,12 @@ class RankingController extends Controller
             ->orderByDesc('total_puntos')
             ->orderByDesc('exactos')
             ->orderByDesc('evaluados')
-            ->orderBy('users.name');
+            ->orderBy('users.name')
+            ->get();
+
+        return view('rankings.index', [
+            'rankings' => $rankings,
+        ]);
     }
 
     public function showPredicciones(User $user): View
