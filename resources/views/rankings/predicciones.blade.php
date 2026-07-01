@@ -16,6 +16,10 @@
         </div>
     </section>
 
+    <div class="mb-5 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-4 py-3 font-bold leading-6 text-[var(--app-text)]">
+        El resultado a evaluar corresponde a los 90 minutos reglamentarios. No cuenta la pr&oacute;rroga ni la tanda de penaltis.
+    </div>
+
     <section class="surface overflow-hidden">
         <div class="grid grid-cols-1 items-center gap-3 border-b border-[var(--app-border)] px-4 py-4 sm:grid-cols-[1fr_auto] sm:px-5">
             <div>

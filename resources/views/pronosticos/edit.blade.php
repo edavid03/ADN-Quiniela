@@ -20,6 +20,10 @@
             </div>
         </section>
 
+        <div class="mb-5 rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-4 py-3 font-bold leading-6 text-[var(--app-text)]">
+            El resultado a evaluar corresponde a los 90 minutos reglamentarios. No cuenta la pr&oacute;rroga ni la tanda de penaltis.
+        </div>
+
         @if (session('status'))
             <div class="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 font-bold text-[var(--app-success)] dark:border-emerald-900/50 dark:bg-emerald-950/30">{{ session('status') }}</div>
         @endif

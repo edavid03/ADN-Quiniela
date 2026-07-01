@@ -49,6 +49,7 @@
                         <a href="{{ route('reglas.index') }}" class="btn btn-secondary {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Reglas</a>
                         @if (auth()->user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.dashboard', 'admin.resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
+                            <a href="{{ route('admin.partidos.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.partidos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Partidos</a>
                             <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.usuarios.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Usuarios</a>
                             <a href="{{ route('admin.auditoria.index') }}" class="btn btn-secondary {{ request()->routeIs('admin.auditoria.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Auditor&iacute;a</a>
                         @endif
@@ -56,7 +57,14 @@
 
                     <div class="flex min-w-0 items-center gap-1.5 text-xs md:flex-wrap md:gap-2 md:text-sm">
                         <span class="hidden max-w-40 truncate rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-3 py-2 font-bold text-[var(--app-muted)] sm:block xl:max-w-56">{{ auth()->user()->name }}</span>
-                        <button type="button" data-theme-toggle class="btn btn-secondary hidden lg:inline-flex">Tema</button>
+                        <button type="button" data-theme-toggle class="btn btn-secondary hidden lg:inline-flex px-3" aria-label="Cambiar tema" title="Cambiar tema">
+                            <svg class="h-5 w-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                            </svg>
+                            <svg class="hidden h-5 w-5 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                            </svg>
+                        </button>
                         <form method="POST" action="{{ route('logout') }}" data-auth-loading>
                             @csrf
                             <button type="submit" class="btn btn-secondary min-h-0 px-2.5 py-1.5 text-xs md:min-h-11 md:px-4 md:py-2.5 md:text-sm">Salir</button>
@@ -66,7 +74,7 @@
             </header>
 
             <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--app-border)] bg-[var(--app-panel)]/94 px-2 pb-[calc(.6rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(18,11,36,.14)] backdrop-blur-xl lg:hidden" aria-label="Navegacion principal">
-                <div class="mx-auto grid max-w-xl {{ auth()->user()->is_admin ? 'grid-cols-4' : 'grid-cols-5' }} gap-2">
+                <div class="mx-auto grid max-w-xl grid-cols-5 gap-2">
                     <a href="{{ route('dashboard') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('dashboard') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Mesa</a>
                     @unless (auth()->user()->is_admin)
                         <a href="{{ route('pronosticos.edit') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('pronosticos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Predicciones</a>

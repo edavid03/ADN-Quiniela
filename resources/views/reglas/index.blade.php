@@ -49,6 +49,11 @@
                 </div>
             </article>
         </div>
+
+        <div class="rules-note">
+            <strong>Tiempo reglamentario</strong>
+            <p>El resultado evaluado corresponde solo a los 90 minutos reglamentarios. No cuenta la prorroga ni la tanda de penaltis.</p>
+        </div>
     </section>
 
     <div class="rules-simple-layout">

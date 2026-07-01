@@ -10,7 +10,7 @@
     @endif
 
 
-    <section class="page-header">
+    <section class="page-header {{ auth()->user()->is_admin ? 'admin-dashboard-header' : '' }}">
         <div>
             <span class="kicker">FWC26 Quiniela</span>
             <h1 class="page-title">Mesa de la quiniela</h1>
@@ -26,7 +26,12 @@
             @endunless
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>
-                <a class="btn btn-secondary" href="{{ route('admin.usuarios.index') }}">Gestionar usuarios</a>
+                <a class="btn btn-secondary" href="{{ route('admin.partidos.index') }}">Partidos</a>
+                <a class="btn btn-secondary" href="{{ route('admin.usuarios.index') }}">Usuarios</a>
+                <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ranking</a>
+            @else
+                <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
+                <a class="btn btn-primary" href="{{ route('pronosticos.edit') }}">Crear o editar pronosticos</a>
             @endif
         </div>
     </section>

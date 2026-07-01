@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\View\View;
 
 class AdminAuditoriaController extends Controller
@@ -12,13 +13,21 @@ class AdminAuditoriaController extends Controller
     {
         $filters = $request->validate([
             'actor_id' => ['nullable', 'integer'],
+            'actor_ids' => ['nullable', 'array'],
+            'actor_ids.*' => ['integer'],
             'action' => ['nullable', 'in:created,updated,deleted'],
             'table_name' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $actorIds = collect(Arr::wrap($filters['actor_ids'] ?? $filters['actor_id'] ?? []))
+            ->filter(fn ($actorId) => $actorId !== null && $actorId !== '')
+            ->map(fn ($actorId) => (int) $actorId)
+            ->unique()
+            ->values();
+
         $auditorias = Auditoria::query()
             ->with('actor')
-            ->when($filters['actor_id'] ?? null, fn ($query, $actorId) => $query->where('actor_id', $actorId))
+            ->when($actorIds->isNotEmpty(), fn ($query) => $query->whereIn('actor_id', $actorIds))
             ->when($filters['action'] ?? null, fn ($query, $action) => $query->where('action', $action))
             ->when($filters['table_name'] ?? null, fn ($query, $tableName) => $query->where('table_name', $tableName))
             ->latest()
@@ -28,11 +37,13 @@ class AdminAuditoriaController extends Controller
         return view('admin.auditoria', [
             'auditorias' => $auditorias,
             'actors' => Auditoria::query()
+                ->leftJoin('users', 'users.id', '=', 'auditorias.actor_id')
                 ->whereNotNull('actor_id')
-                ->select(['actor_id', 'actor_name'])
-                ->distinct()
+                ->selectRaw('auditorias.actor_id, auditorias.actor_name, users.is_admin')
+                ->groupBy('auditorias.actor_id', 'auditorias.actor_name', 'users.is_admin')
                 ->orderBy('actor_name')
                 ->get(),
+            'selectedActorIds' => $actorIds,
             'tables' => Auditoria::query()
                 ->select('table_name')
                 ->distinct()

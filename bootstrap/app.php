@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,6 +27,22 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'message' => 'Tu sesion expiro. Recarga el formulario e intenta nuevamente.',
                 ], 419);
+            }
+
+            $redirect = $request->is('login')
+                ? redirect()->route('login')
+                : back();
+
+            return $redirect
+                ->withInput($request->except('_token', 'password', 'password_confirmation'))
+                ->withErrors([
+                    'session' => 'Tu sesion expiro. Recarga el formulario e intenta iniciar sesion nuevamente.',
+                ]);
+        });
+
+        $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
+            if ($response->getStatusCode() !== 419 || $request->expectsJson()) {
+                return $response;
             }
 
             $redirect = $request->is('login')
