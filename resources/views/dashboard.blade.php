@@ -16,7 +16,14 @@
             <h1 class="page-title">Mesa de la quiniela</h1>
             
         </div>
-        <div class="page-actions {{ auth()->user()->is_admin ? 'admin-dashboard-actions' : '' }}">
+        <div class="page-actions">
+           
+            <a class="btn btn-secondary" href="{{ route('rankings.index') }}">Ver ranking</a>
+            <a class="btn btn-secondary" href="{{ route('pronosticos-publicos.index') }}">Pronosticos publicos</a>
+            <a class="btn btn-secondary" href="{{ route('cruces.index') }}">Cuadro de cruces</a>
+            @unless (auth()->user()->is_admin)
+                <a class="btn btn-primary" href="{{ route('mi-desempeno') }}">Mi desempe&ntilde;o</a>
+            @endunless
             @if (auth()->user()->is_admin)
                 <a class="btn btn-secondary" href="{{ route('admin.dashboard') }}">Dashboard admin</a>
                 <a class="btn btn-secondary" href="{{ route('admin.partidos.index') }}">Partidos</a>

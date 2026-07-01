@@ -42,6 +42,10 @@
                         @endunless
                         <a href="{{ route('resultados.index') }}" class="btn btn-secondary {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Resultados</a>
                         <a href="{{ route('rankings.index') }}" class="btn btn-secondary {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Ranking</a>
+                        @unless (auth()->user()->is_admin)
+                            <a href="{{ route('mi-desempeno') }}" class="btn btn-secondary {{ request()->routeIs('mi-desempeno') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Mi desempe&ntilde;o</a>
+                        @endunless
+                        <a href="{{ route('cruces.index') }}" class="btn btn-secondary {{ request()->routeIs('cruces.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Cruces</a>
                         <a href="{{ route('reglas.index') }}" class="btn btn-secondary {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Reglas</a>
                         @if (auth()->user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary {{ request()->routeIs('admin.dashboard', 'admin.resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)]' : '' }}">Admin</a>
@@ -77,11 +81,7 @@
                     @endunless
                     <a href="{{ route('resultados.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('resultados.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Resultados</a>
                     <a href="{{ route('rankings.index') }}" class="btn btn-secondary min-h-12 px-2 text-xs {{ request()->routeIs('rankings.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Ranking</a>
-                    @if (auth()->user()->is_admin)
-                        <a href="{{ route('admin.partidos.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('admin.partidos.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Partidos</a>
-                    @else
-                        <a href="{{ route('reglas.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('reglas.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Reglas</a>
-                    @endif
+                    <a href="{{ route('cruces.index') }}" class="btn btn-secondary min-h-12 px-1 text-xs {{ request()->routeIs('cruces.*') ? 'border-[var(--app-primary)] bg-[var(--app-panel-soft)] text-[var(--app-primary)]' : '' }}">Cruces</a>
                 </div>
             </nav>
         @endauth
